@@ -1,0 +1,7 @@
+[
+  { "name": "🆕 Create a new Task List", "value": "create" },
+  { "name": "✏️  Update an existing Task List", "value": "update" },
+  { "name": "🗑️  Delete a Task List", "value": "delete" },
+  { "name": "📋 View all Task Lists", "value": "view" },
+  { "name": "🔙 Go back", "value": "back" }
+]
