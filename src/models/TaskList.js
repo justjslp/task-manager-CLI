@@ -19,7 +19,7 @@ export class TaskList {
    *
    * @param {string} name - The name of the task list.
    */
-  constructor(name) {
+  constructor(name, description, isDefault = false, isArchived = false) {
     /**
      * A unique identifier for the TaskList.
      * @type {string}
@@ -31,6 +31,24 @@ export class TaskList {
      * @type {string}
      */
     this.name = name;
+
+    /**
+     * Set a description for the Task List.
+     * @type {string}
+     */
+    this.description = description;
+
+    /**
+     * Indicates if this is the default task list.
+     * @type {boolean}
+     */
+    this.isDefault = false;
+
+    /**
+     * Mark a Task List as inactive instead of deleting it.
+     * @type {boolean}
+     */
+    this.isArchived = false;
 
     /**
      * An array to store tasks within the TaskList.

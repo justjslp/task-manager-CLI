@@ -46,7 +46,13 @@ export class TaskListManager {
    */
   addTaskList(taskList) {
     this.taskLists.push(taskList);
-    console.log(`✅ TaskList '${taskList.name}' created!`);
+    console.log(
+      `✅ Task List "${taskList.name}" has been created successfully!`
+    );
     console.log(this.taskLists);
+  }
+
+  getTaskList(id) {
+    return this.taskLists.filter((taskList) => taskList.id === id);
   }
 }

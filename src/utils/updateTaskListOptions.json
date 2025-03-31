@@ -1,0 +1,8 @@
+[
+  { "name": "👤 Update Name", "value": "updateName" },
+  { "name": "📝 Update Description", "value": "updateDescription" },
+  { "name": "🔧 Toggle isDefault", "value": "toggleDefault" },
+  { "name": "🗃️  Toggle isArchived", "value": "toggleArchived" },
+  { "name": "🔙 Go back", "value": "back" },
+  { "name": "🏠 Return to the main menu", "value": "menu" }
+]

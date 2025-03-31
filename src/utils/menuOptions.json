@@ -1,0 +1,15 @@
+[
+  { "name": "📝 Task List Manager Menu", "value": 1 },
+  { "name": "🚀 Add Task", "value": 2 },
+  { "name": "🗑️  Delete Task", "value": 3 },
+  { "name": "✏️  Update Task", "value": 4 },
+  { "name": "✅ Mark Task as Completed", "value": 5 },
+  { "name": "🔄 Reopen Completed Task", "value": 6 },
+  { "name": "📋 List All Tasks", "value": 7 },
+  { "name": "🔎 Filter Tasks", "value": 8 },
+  { "name": "💾 Save Tasks to File", "value": 9 },
+  { "name": "📂 Load Tasks from File", "value": 10 },
+  { "name": "⚡ Set Task Priority", "value": 11 },
+  { "name": "📊 Sort Tasks by Priority", "value": 12 },
+  { "name": "👋 Exit", "value": 0 }
+]

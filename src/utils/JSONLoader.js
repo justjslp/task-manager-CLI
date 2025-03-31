@@ -1,9 +1,5 @@
 import { readFile } from "fs/promises";
 
-import { Task } from "./Task.js";
-import { TaskList } from "./TaskList.js";
-import { TaskListManager } from "./TaskListManager.js";
-
 /**
  * Asynchronously loads and parses a JSON file.
  *
@@ -32,23 +28,34 @@ async function loadJSON(filePath) {
 }
 
 // Load JSON configuration files asynchronously
+
+/**
+ * The main menu options of the task manager CLI application.
+ * @type {Object}
+ */
+const menuOptions = await loadJSON("../utils/menuOptions.json");
+
 /**
  * The priority levels configuration loaded from "../assets/priorityLevels.json".
  * @type {Object}
  */
-const priorityLevels = await loadJSON("../assets/priorityLevels.json");
+const priorityLevels = await loadJSON("../utils/priorityLevels.json");
 
 /**
  * The Task List Manager menu configuration loaded from "../assets/taskListManagerMenu.json".
  * @type {Object}
  */
-const taskListManagerMenu = await loadJSON(
-  "../assets/taskListManagerMenu.json"
-);
+const taskListManagerMenu = await loadJSON("../utils/taskListManagerMenu.json");
+
+/**
+ * The update task list options configuration loaded from "../assets/taskListManagerMenu.json".
+ * @type {Object}
+ */
+const updateOptions = await loadJSON("../utils/updateTaskListOptions.json");
 
 /**
  * Exports the Task, TaskList, TaskListManager classes, along with the loaded JSON configurations.
  *
  * @module Importer
  */
-export { Task, TaskList, TaskListManager, priorityLevels, taskListManagerMenu };
+export { menuOptions, priorityLevels, taskListManagerMenu, updateOptions };
