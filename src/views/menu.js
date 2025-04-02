@@ -82,6 +82,6 @@ async function handleMenuSelection(option, manager) {
       console.log("👋 Exiting...");
       process.exit(0);
     default:
-      console.log("❌ Invalid option. Please try again.");
+      console.warn("❌ Invalid option. Please try again.");
   }
 }

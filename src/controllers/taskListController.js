@@ -2,7 +2,7 @@ import inquirer from "inquirer";
 import { updateOptions } from "../utils/JSONLoader.js";
 import { TaskList } from "../models/TaskList.js";
 import { mainMenu } from "../views/menu.js";
-
+import { showTaskListManagerMenu } from "../views/taskListMenu.js";
 /**
  * Prompts the user to create a new Task List.
  *
@@ -18,7 +18,7 @@ export async function createTaskList(manager) {
     {
       type: "input",
       name: "taskListName",
-      message: "Enter a name for your new Task List (max 20 characters)",
+      message: "📝 Enter a name for your new Task List (max 20 characters)",
       validate: (input) =>
         input.length > 0 && input.length <= 20
           ? true
@@ -28,21 +28,22 @@ export async function createTaskList(manager) {
       type: "input",
       name: "taskListDescription",
       message:
-        "Enter a description for your new Task List (max 100 characters)",
+        "📝 Enter a description for your new Task List (max 100 characters)",
       validate: (input) =>
         input.length > 0 && input.length <= 100
           ? true
-          : "⚠️  Task List description must be between 1 and 20 characters.",
+          : "⚠️  Task List description must be between 1 and 100 characters.",
     },
   ]);
 
   const newTaskList = new TaskList(taskListName, taskListDescription);
   manager.addTaskList(newTaskList);
+  await showTaskListManagerMenu(manager);
 }
 
 export async function updateTaskList(manager) {
   if (manager.taskLists.length === 0) {
-    console.log("⚠️  No Task Lists available to update.");
+    console.warn("⚠️  No Task Lists available to update.");
     return;
   }
 
@@ -59,8 +60,7 @@ export async function updateTaskList(manager) {
   ]);
 
   const selectedTaskList = manager.getTaskList(selectedTaskId);
-  console.log(selectedTaskList);
-
+  selectedTaskList.logTaskListState();
   const { updateAction } = await inquirer.prompt([
     {
       type: "list",
@@ -73,22 +73,74 @@ export async function updateTaskList(manager) {
   // Process updateAction here (implementation depends on your logic)
   switch (updateAction) {
     case "updateName":
-      // code to update the name
+      const { updatedName } = await inquirer.prompt([
+        {
+          type: "input",
+          name: "updatedName",
+          message: "📝 Enter the new name for your Task List",
+          validate: (input) => {
+            if (input.trim().length === 0)
+              return "⚠️ Task List name cannot be empty.";
+            if (input.length > 20)
+              return "⚠️ Task List name must be at most 20 characters.";
+            return true;
+          },
+        },
+      ]);
+      if (updatedName.trim() !== "")
+        selectedTaskList.updateFields("name", updatedName.trim());
+      await showTaskListManagerMenu(manager);
       break;
     case "updateDescription":
-      // code to update the description
+      const { updatedDescription } = await inquirer.prompt([
+        {
+          type: "input",
+          name: "updatedDescription",
+          message: "📝 Enter the new description for your Task List",
+          validate: (input) => {
+            if (input.trim().length === 0)
+              return "⚠️ Task List description cannot be empty.";
+            if (input.length > 100)
+              return "⚠️ Task List description must be at most 100 characters.";
+            return true;
+          },
+        },
+      ]);
+      if (updatedDescription.trim() !== "")
+        selectedTaskList.updateFields("description", updatedDescription.trim());
+      await showTaskListManagerMenu(manager);
       break;
     case "toggleDefault":
-      // code to toggle isDefault property
+      const { toggleDefault } = await inquirer.prompt([
+        {
+          type: "confirm",
+          name: "toggleDefault",
+          message:
+            "🕹️  Would you like to toggle the default status for this Task List?",
+          default: false,
+        },
+      ]);
+      selectedTaskList.updateFields("isDefault", toggleDefault);
+      await showTaskListManagerMenu(manager);
       break;
     case "toggleArchived":
-      // code to toggle isArchived property
+      const { toggleArchived } = await inquirer.prompt([
+        {
+          type: "confirm",
+          name: "toggleArchived",
+          message:
+            "🕹️  Would you like to toggle the archived status for this Task List?",
+          default: false,
+        },
+      ]);
+      selectedTaskList.updateFields("isArchived", toggleArchived);
+      await showTaskListManagerMenu(manager);
       break;
     case "back":
       await updateTaskList(manager);
       break;
     case "menu":
-      await mainMenu(manager);
+      await showTaskListManagerMenu(manager);
     default:
       console.log("❌ Invalid option selected.");
   }

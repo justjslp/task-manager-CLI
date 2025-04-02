@@ -57,6 +57,28 @@ export class TaskList {
     this.tasks = [];
   }
 
+  updateFields(field, updatedField) {
+    if (this.hasOwnProperty(field)) {
+      this[field] = updatedField;
+      console.log(
+        `✅ Field ${field} has been updated to ${updatedField} successfully!`
+      );
+    } else {
+      console.warn(`⚠️  Field "${field}" does not exist in TaskList.`);
+    }
+  }
+
+  logTaskListState() {
+    console.log("📌 TaskList State:", {
+      id: this.id,
+      name: this.name,
+      description: this.description,
+      isDefault: this.isDefault,
+      isArchived: this.isArchived,
+      tasks: this.tasks.length + " tasks",
+    });
+  }
+
   /**
    * Adds a new task to the task list.
    *
