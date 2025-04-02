@@ -68,6 +68,15 @@ export class TaskList {
     }
   }
 
+  deleteTaskListSelf(manager, selectedTaskList) {
+    manager.taskLists = manager.taskLists.filter(
+      (task) => task.id !== selectedTaskList.id
+    );
+    console.log(
+      `✅ Task List ${selectedTaskList.name} has been deleted.`
+    );
+  }
+
   logTaskListState() {
     console.log("📌 TaskList State:", {
       id: this.id,

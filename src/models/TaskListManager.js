@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import chalk from "chalk";
 
 /**
  * Represents the manager of all the Task Lists.
@@ -53,5 +54,17 @@ export class TaskListManager {
 
   getTaskList(id) {
     return this.taskLists.find((taskList) => taskList.id === id);
+  }
+
+  getAllTasksLists() {
+    console.log(chalk.blue("\n📋 Available Task Lists:\n"));
+    this.taskLists.forEach((list, index) => {
+      console.log(
+        chalk.green(`  ${index + 1}. ${list.name}`) +
+          chalk.gray(` (ID: ${list.id.slice(0, 8)}...)`) // Show only part of ID
+      );
+    });
+
+    console.log(""); // Add space after the list
   }
 }

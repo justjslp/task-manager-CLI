@@ -1,8 +1,13 @@
 import inquirer from "inquirer";
 import { updateOptions } from "../utils/JSONLoader.js";
 import { TaskList } from "../models/TaskList.js";
-import { mainMenu } from "../views/menu.js";
 import { showTaskListManagerMenu } from "../views/taskListMenu.js";
+
+/**
+ * Freeze JSON configuration objects to prevent accidental modification.
+ */
+Object.freeze(updateOptions);
+
 /**
  * Prompts the user to create a new Task List.
  *
@@ -144,4 +149,45 @@ export async function updateTaskList(manager) {
     default:
       console.log("❌ Invalid option selected.");
   }
+}
+
+export async function deleteTaskList(manager) {
+  if (manager.taskLists.length === 0) {
+    console.warn("⚠️  No Task Lists available to delete.");
+    return;
+  }
+
+  const { selectedTaskId } = await inquirer.prompt([
+    {
+      type: "list",
+      name: "selectedTaskId",
+      message: "🗑️ Select a Task List to delete",
+      choices: manager.taskLists.map((list) => ({
+        name: list.name,
+        value: list.id,
+      })),
+    },
+  ]);
+
+  const selectedTaskList = manager.getTaskList(selectedTaskId);
+
+  const { answer } = await inquirer.prompt([
+    {
+      type: "confirm",
+      name: "answer",
+      message: `Are you sure you want to delete the task list "${selectedTaskList.name}"? This will permanently remove all tasks within this list.`,
+      default: false,
+    },
+  ]);
+  if (answer) selectedTaskList.deleteTaskListSelf(manager, selectedTaskList);
+  await showTaskListManagerMenu(manager);
+}
+
+export async function displayTasksLists(manager) {
+  if (manager.taskLists.length === 0) {
+    console.warn("⚠️ No Task Lists available.");
+    return;
+  }
+  manager.getAllTasksLists();
+  await showTaskListManagerMenu(manager);
 }

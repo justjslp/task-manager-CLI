@@ -3,6 +3,8 @@ import { taskListManagerMenu } from "../utils/JSONLoader.js";
 import {
   createTaskList,
   updateTaskList,
+  deleteTaskList,
+  displayTasksLists,
 } from "../controllers/taskListController.js";
 import { mainMenu } from "./menu.js";
 
@@ -38,10 +40,10 @@ export async function showTaskListManagerMenu(manager) {
       await updateTaskList(manager);
       break;
     case "delete":
-      // Function to delete a Task List (not yet implemented)
+      await deleteTaskList(manager);
       break;
     case "view":
-      // Function to view all Task Lists (not yet implemented)
+      await displayTasksLists(manager);
       break;
     case "back":
       await mainMenu(manager);
