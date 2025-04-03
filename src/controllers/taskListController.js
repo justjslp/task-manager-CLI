@@ -49,7 +49,7 @@ export async function createTaskList(manager) {
 export async function updateTaskList(manager) {
   if (manager.taskLists.length === 0) {
     console.warn("⚠️  No Task Lists available to update.");
-    return;
+    await showTaskListManagerMenu(manager);
   }
 
   const { selectedTaskId } = await inquirer.prompt([
@@ -65,7 +65,6 @@ export async function updateTaskList(manager) {
   ]);
 
   const selectedTaskList = manager.getTaskList(selectedTaskId);
-  selectedTaskList.logTaskListState();
   const { updateAction } = await inquirer.prompt([
     {
       type: "list",
@@ -154,7 +153,7 @@ export async function updateTaskList(manager) {
 export async function deleteTaskList(manager) {
   if (manager.taskLists.length === 0) {
     console.warn("⚠️  No Task Lists available to delete.");
-    return;
+    await showTaskListManagerMenu(manager);
   }
 
   const { selectedTaskId } = await inquirer.prompt([
@@ -186,7 +185,7 @@ export async function deleteTaskList(manager) {
 export async function displayTasksLists(manager) {
   if (manager.taskLists.length === 0) {
     console.warn("⚠️ No Task Lists available.");
-    return;
+    await showTaskListManagerMenu(manager);
   }
   manager.getAllTasksLists();
   await showTaskListManagerMenu(manager);

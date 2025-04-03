@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import chalk from "chalk";
+import { formatTimestamp } from "../utils/formatTimestamp.js";
 
 /**
  * Represents the manager of all the Task Lists.
@@ -14,6 +15,7 @@ import chalk from "chalk";
  * // Assuming you have a TaskList instance named `workTaskList`
  * manager.addTaskList(workTaskList);
  */
+
 export class TaskListManager {
   /**
    * Creates a new TaskListManager instance.
@@ -57,14 +59,30 @@ export class TaskListManager {
   }
 
   getAllTasksLists() {
-    console.log(chalk.blue("\n📋 Available Task Lists:\n"));
+    console.log(chalk.bold.blue("\n📋 Available Task Lists:\n"));
     this.taskLists.forEach((list, index) => {
+      const tasksQuantity = list.tasks.length;
+      const id = list.id;
+      const name = list.name;
+      const isDefault = list.isDefault ? chalk.yellow("🔧 Default") : "";
+      const isArchived = list.isArchived ? chalk.red("🗃️  Archived") : "";
+      const createdAt = list.createdAt
+        ? chalk.dim.black(`📅 ${formatTimestamp(list.createdAt)}`)
+        : "";
+      const updatedAt = list.updatedAt
+        ? chalk.dim.black(`📝 ${formatTimestamp(list.updatedAt)}`)
+        : chalk.dim.black("Not updated so far");
+
       console.log(
-        chalk.green(`  ${index + 1}. ${list.name}`) +
-          chalk.gray(` (ID: ${list.id.slice(0, 8)}...)`) // Show only part of ID
+        chalk.cyan(index + 1 + ". ") +
+          chalk.bold.green(`${name} `) +
+          chalk.gray(`(ID: ${id.slice(0, 8)}...) `) +
+          chalk.cyanBright(`${tasksQuantity} tasks. `) +
+          chalk.whiteBright(`Created at: ${createdAt}. `) +
+          chalk.whiteBright(`Updated at: ${updatedAt}. `) +
+          chalk(`${isDefault} `) +
+          chalk(`${isArchived}`)
       );
     });
-
-    console.log(""); // Add space after the list
   }
 }

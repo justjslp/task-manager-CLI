@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { formatTimestamp } from "../utils/formatTimestamp.js";
 
 /**
  * Represents an individual Task List.
@@ -19,7 +20,14 @@ export class TaskList {
    *
    * @param {string} name - The name of the task list.
    */
-  constructor(name, description, isDefault = false, isArchived = false) {
+  constructor(
+    name,
+    description,
+    isDefault = false,
+    isArchived = false,
+    createdAt = Date.now(),
+    updatedAt = null
+  ) {
     /**
      * A unique identifier for the TaskList.
      * @type {string}
@@ -50,6 +58,10 @@ export class TaskList {
      */
     this.isArchived = false;
 
+    this.createdAt = createdAt;
+
+    this.updatedAt = updatedAt;
+
     /**
      * An array to store tasks within the TaskList.
      * @type {Array<Object>}
@@ -60,6 +72,7 @@ export class TaskList {
   updateFields(field, updatedField) {
     if (this.hasOwnProperty(field)) {
       this[field] = updatedField;
+      this.updatedAt = Date.now();
       console.log(
         `✅ Field ${field} has been updated to ${updatedField} successfully!`
       );
@@ -72,9 +85,7 @@ export class TaskList {
     manager.taskLists = manager.taskLists.filter(
       (task) => task.id !== selectedTaskList.id
     );
-    console.log(
-      `✅ Task List ${selectedTaskList.name} has been deleted.`
-    );
+    console.log(`✅ Task List ${selectedTaskList.name} has been deleted.`);
   }
 
   logTaskListState() {
@@ -84,6 +95,8 @@ export class TaskList {
       description: this.description,
       isDefault: this.isDefault,
       isArchived: this.isArchived,
+      createdAt: formatTimestamp(this.createdAt),
+      updatedAt: this.updatedAt ? formatTimestamp(this.updatedAt) : null,
       tasks: this.tasks.length + " tasks",
     });
   }
