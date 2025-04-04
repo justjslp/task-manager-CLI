@@ -1,8 +1,8 @@
 [
-  { "name": "🔥 Most Urgent Tasks", "value": "URGENT" },
-  { "name": "⚡ Most Important Tasks", "value": "IMPORTANT" },
-  { "name": "⏱️ Five Minute Tasks", "value": "FIVE" },
-  { "name": "⏰ Under an Hour Tasks", "value": "UNDER_HOUR" },
-  { "name": "🕒 Less Urgent Tasks", "value": "LESS_URGENT" },
-  { "name": "🙂 Non Urgent Tasks", "value": "NON_URGENT" }
+  { "name": "🔥 Most Urgent Tasks", "value": 1 },
+  { "name": "⚡ Most Important Tasks", "value": 2 },
+  { "name": "⏱️ 5-Minute Tasks", "value": 3 },
+  { "name": "⏰ Under 1 Hour Tasks", "value": 4 },
+  { "name": "🕒 Less Urgent Tasks", "value": 5 },
+  { "name": "🙂 Non-Urgent Tasks", "value": 6 }
 ]

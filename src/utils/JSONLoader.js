@@ -48,6 +48,12 @@ const priorityLevels = await loadJSON("../utils/priorityLevels.json");
 const taskListManagerMenu = await loadJSON("../utils/taskListManagerMenu.json");
 
 /**
+ * The Task Manager menu configuration loaded from "../assets/taskManagerMenu.json".
+ * @type {Object}
+ */
+const taskManagerMenu = await loadJSON("../utils/taskManagerMenu.json");
+
+/**
  * The update task list options configuration loaded from "../assets/taskListManagerMenu.json".
  * @type {Object}
  */
@@ -58,4 +64,10 @@ const updateOptions = await loadJSON("../utils/updateTaskListOptions.json");
  *
  * @module Importer
  */
-export { menuOptions, priorityLevels, taskListManagerMenu, updateOptions };
+export {
+  menuOptions,
+  priorityLevels,
+  taskListManagerMenu,
+  taskManagerMenu,
+  updateOptions,
+};

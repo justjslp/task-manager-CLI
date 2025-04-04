@@ -1,6 +1,13 @@
 import inquirer from "inquirer";
 import { showTaskListManagerMenu } from "./taskListMenu.js";
+import { showTaskManagerMenu } from "./taskMenu.js";
 import { menuOptions } from "../utils/JSONLoader.js";
+import chalk from "chalk";
+
+/**
+ * Freeze JSON configuration objects to prevent accidental modification.
+ */
+Object.freeze(menuOptions);
 
 /**
  * An array of main menu options for the CLI.
@@ -46,42 +53,12 @@ async function handleMenuSelection(option, manager) {
       await showTaskListManagerMenu(manager);
       break;
     case 2:
-      console.log("🚀 Adding a new task...");
-      break;
-    case 3:
-      console.log("🗑️ Deleting a task...");
-      break;
-    case 4:
-      console.log("✏️ Updating a task...");
-      break;
-    case 5:
-      console.log("✅ Marking task as completed...");
-      break;
-    case 6:
-      console.log("🔄 Reopening completed task...");
-      break;
-    case 7:
-      console.log("📋 Listing all tasks...");
-      break;
-    case 8:
-      console.log("🔎 Filtering tasks...");
-      break;
-    case 9:
-      console.log("💾 Saving tasks to file...");
-      break;
-    case 10:
-      console.log("📂 Loading tasks from file...");
-      break;
-    case 11:
-      console.log("⚡ Setting task priority...");
-      break;
-    case 12:
-      console.log("📊 Sorting tasks by priority...");
+      await showTaskManagerMenu(manager);
       break;
     case 0:
-      console.log("👋 Exiting...");
+      console.log(chalk.greenBright("👋 Exiting..."));
       process.exit(0);
     default:
-      console.warn("❌ Invalid option. Please try again.");
+      console.warn(chalk.redBright("❌ Invalid option. Please try again."));
   }
 }

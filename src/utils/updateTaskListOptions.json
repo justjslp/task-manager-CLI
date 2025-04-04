@@ -2,7 +2,7 @@
   { "name": "👤 Update Name", "value": "updateName" },
   { "name": "📝 Update Description", "value": "updateDescription" },
   { "name": "🔧 Toggle isDefault", "value": "toggleDefault" },
-  { "name": "🗃️  Toggle isArchived", "value": "toggleArchived" },
-  { "name": "🔙 Go back", "value": "back" },
+  { "name": "🗃️ Toggle isArchived", "value": "toggleArchived" },
+  { "name": "🔙 Go Back", "value": "back" },
   { "name": "🏠 Return to Task List Manager Menu", "value": "menu" }
 ]

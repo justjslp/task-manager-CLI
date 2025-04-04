@@ -7,6 +7,7 @@ import {
   displayTasksLists,
 } from "../controllers/taskListController.js";
 import { mainMenu } from "./menu.js";
+import chalk from "chalk";
 
 /**
  * Freeze JSON configuration objects to prevent accidental modification.
@@ -33,20 +34,22 @@ export async function showTaskListManagerMenu(manager) {
     },
   ]);
   switch (action) {
-    case "create":
+    case 1:
       await createTaskList(manager);
       break;
-    case "update":
+    case 2:
       await updateTaskList(manager);
       break;
-    case "delete":
+    case 3:
       await deleteTaskList(manager);
       break;
-    case "view":
+    case 4:
       await displayTasksLists(manager);
       break;
-    case "back":
+    case 0:
       await mainMenu(manager);
       break;
+    default:
+      console.warn(chalk.redBright("❌ Invalid option. Please try again."));
   }
 }

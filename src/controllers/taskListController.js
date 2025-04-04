@@ -2,6 +2,7 @@ import inquirer from "inquirer";
 import { updateOptions } from "../utils/JSONLoader.js";
 import { TaskList } from "../models/TaskList.js";
 import { showTaskListManagerMenu } from "../views/taskListMenu.js";
+import chalk from "chalk";
 
 /**
  * Freeze JSON configuration objects to prevent accidental modification.
@@ -48,7 +49,7 @@ export async function createTaskList(manager) {
 
 export async function updateTaskList(manager) {
   if (manager.taskLists.length === 0) {
-    console.warn("⚠️  No Task Lists available to update.");
+    console.warn(chalk.redBright("⚠️  No Task Lists available to update."));
     await showTaskListManagerMenu(manager);
   }
 
@@ -152,7 +153,7 @@ export async function updateTaskList(manager) {
 
 export async function deleteTaskList(manager) {
   if (manager.taskLists.length === 0) {
-    console.warn("⚠️  No Task Lists available to delete.");
+    console.warn(chalk.redBright("⚠️  No Task Lists available to delete."));
     await showTaskListManagerMenu(manager);
   }
 
@@ -184,7 +185,7 @@ export async function deleteTaskList(manager) {
 
 export async function displayTasksLists(manager) {
   if (manager.taskLists.length === 0) {
-    console.warn("⚠️ No Task Lists available.");
+    console.warn(chalk.redBright("⚠️  No Task Lists available."));
     await showTaskListManagerMenu(manager);
   }
   manager.getAllTasksLists();
