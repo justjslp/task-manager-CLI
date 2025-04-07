@@ -1,6 +1,7 @@
 import inquirer from "inquirer";
 import { showTaskListManagerMenu } from "./taskListMenu.js";
 import { showTaskManagerMenu } from "./taskMenu.js";
+import { openGithubProfile } from "./openGithubProfile.js";
 import { menuOptions } from "../utils/JSONLoader.js";
 import chalk from "chalk";
 
@@ -54,6 +55,9 @@ async function handleMenuSelection(option, manager) {
       break;
     case 2:
       await showTaskManagerMenu(manager);
+      break;
+    case 3:
+      await openGithubProfile();
       break;
     case 0:
       console.log(chalk.greenBright("👋 Exiting..."));

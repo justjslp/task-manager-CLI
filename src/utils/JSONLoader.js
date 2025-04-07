@@ -66,8 +66,8 @@ const updateOptions = await loadJSON("../utils/updateTaskListOptions.json");
  */
 export {
   menuOptions,
-  priorityLevels,
   taskListManagerMenu,
-  taskManagerMenu,
   updateOptions,
+  taskManagerMenu,
+  priorityLevels,
 };

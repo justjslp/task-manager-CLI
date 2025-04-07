@@ -1,35 +1,32 @@
-/**
- * @fileoverview Main script for the Task Manager CLI application.
- *
- * This module provides a command-line interface (CLI) for managing Task Lists and Tasks.
- * Current functionality includes creating a new Task List using a TaskListManager.
- * Additional operations such as updating, deleting, viewing, and managing individual tasks
- * are planned for future implementation.
- *
- * @module Index
- */
-
+import inquirer from "inquirer";
+import open from "open"; // Make sure to install via `npm install open`
 import { mainMenu } from "./views/menu.js";
 import { TaskListManager } from "./models/TaskListManager.js";
+import chalk from "chalk";
+import { pastel } from "gradient-string";
 
-/**
- * Initializes and runs the CLI Task Manager application.
- *
- * This function creates an instance of `TaskListManager` and continuously prompts
- * the user to select actions from the main menu. It ensures that the application
- * runs in a loop, allowing users to manage tasks and task lists interactively.
- *
- * The function also includes error handling to catch unexpected runtime issues.
- *
- * @async
- * @function main
- * @returns {Promise<void>} Resolves when the user exits the application.
- *
- * @example
- * // Start the CLI application
- * main();
- */
 async function main() {
+  const title = `████████╗ █████╗ ███████╗██╗  ██╗    ██╗     ██╗███████╗████████╗    ███╗   ███╗ █████╗ ███╗   ██╗ █████╗  ██████╗ ███████╗██████╗      
+╚══██╔══╝██╔══██╗██╔════╝██║ ██╔╝    ██║     ██║██╔════╝╚══██╔══╝    ████╗ ████║██╔══██╗████╗  ██║██╔══██╗██╔════╝ ██╔════╝██╔══██╗    
+   ██║   ███████║███████╗█████╔╝     ██║     ██║███████╗   ██║       ██╔████╔██║███████║██╔██╗ ██║███████║██║  ███╗█████╗  ██████╔╝    
+   ██║   ██╔══██║╚════██║██╔═██╗     ██║     ██║╚════██║   ██║       ██║╚██╔╝██║██╔══██║██║╚██╗██║██╔══██║██║   ██║██╔══╝  ██╔══██╗    
+   ██║   ██║  ██║███████║██║  ██╗    ███████╗██║███████║   ██║       ██║ ╚═╝ ██║██║  ██║██║ ╚████║██║  ██║╚██████╔╝███████╗██║  ██║    
+   ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝    ╚══════╝╚═╝╚══════╝   ╚═╝       ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝`;
+
+  const subtitle = chalk.bold.whiteBright(
+    "\n✅ Welcome to Task Manager CLI. By"
+  );
+
+  // Print title and subtitle with gradient
+  console.log("\n" + pastel.multiline(title));
+  console.log(
+    subtitle +
+      chalk.rgb(72, 171, 182).italic(" justjslp.") +
+      " Github: " +
+      chalk.rgb(101, 101, 255).bold.underline("https://github.com/justjslp") +
+      ".\n"
+  );
+
   const manager = new TaskListManager();
   await mainMenu(manager);
 }

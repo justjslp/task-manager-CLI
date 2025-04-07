@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { formatLocalDate } from "../utils/dateFormat.js";
 
 /**
  * Represents an individual Task.
@@ -21,10 +22,7 @@ export class Task {
    *
    * @throws {Error} Throws an error if the provided priority is not one of the allowed values.
    */
-  constructor(description, dueDate, priority = priorityLevels.NON_URGENT) {
-    if (!Object.values(priorityLevels).includes(priority)) {
-      throw new Error(`Invalid priority: ${priority}`);
-    }
+  constructor(description, dueDate, priority = 6) {
     /**
      * A unique identifier for the Task.
      * @type {string}
@@ -59,6 +57,6 @@ export class Task {
      * The timestamp representing when the task was created.
      * @type {Date}
      */
-    this.createdAt = new Date();
+    this.createdAt = formatLocalDate(new Date());
   }
 }

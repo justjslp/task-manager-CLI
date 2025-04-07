@@ -1,6 +1,15 @@
 import inquirer from "inquirer";
 import { taskManagerMenu } from "../utils/JSONLoader.js";
-// import { } from "../controllers/taskController.js";
+import {
+  addTask,
+  updateTask,
+  deleteTask,
+  markTaskAsCompleted,
+  reopenCompletedTask,
+  displayTasks,
+  filterTasks,
+  sortTasks,
+} from "../controllers/taskController.js";
 import { mainMenu } from "./menu.js";
 import chalk from "chalk";
 
@@ -17,9 +26,12 @@ Object.freeze(taskManagerMenu);
  * await showTaskManagerMenu(selectedTaskList);
  */
 export async function showTaskManagerMenu(manager) {
-
   if (manager.taskLists.length === 0) {
-    console.warn(chalk.redBright("⚠️  No Task Lists available."));
+    console.warn(
+      chalk.redBright(
+        "⚠️  No Task Lists available. Please first create a task list or load tasks from file."
+      )
+    );
     await mainMenu(manager);
   }
 
@@ -47,40 +59,34 @@ export async function showTaskManagerMenu(manager) {
   ]);
   switch (action) {
     case 1:
-      await addTask(manager, selectedTaskList);
+      await addTask(selectedTaskList);
       break;
     case 2:
-      await updateTask(manager, selectedTaskList);
+      await updateTask(selectedTaskList);
       break;
     case 3:
-      await deleteTask(manager, selectedTaskList);
+      await deleteTask(selectedTaskList);
       break;
     case 4:
-      await markTaskAsCompleted(manager, selectedTaskList);
+      await markTaskAsCompleted(selectedTaskList);
       break;
     case 5:
-      await reopenCompletedTask(manager, selectedTaskList);
+      await reopenCompletedTask(selectedTaskList);
       break;
     case 6:
-      await listAllTasks(manager, selectedTaskList);
+      await displayTasks(selectedTaskList);
       break;
     case 7:
-      await filterTasks(manager, selectedTaskList);
+      await filterTasks(selectedTaskList);
       break;
     case 8:
-      await saveTasksToAFile(manager, selectedTaskList);
+      await updateTaskPriority(selectedTaskList);
       break;
-    case 9:
-      await loadTasksFromFile(manager, selectedTaskList);
-      break;
-    case 10:
-      await updateTaskPriority(manager, selectedTaskList);
-      break;
-    case 11:
-      await reopenCompletedTask(manager, selectedTaskList);
+    case 8:
+      await sortTasks(selectedTaskList);
       break;
     case 0:
-      await mainMenu(manager, selectedTaskList);
+      await mainMenu(selectedTaskList);
       break;
     default:
       console.warn(chalk.redBright("❌ Invalid option. Please try again."));

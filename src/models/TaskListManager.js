@@ -59,7 +59,7 @@ export class TaskListManager {
   }
 
   getAllTasksLists() {
-    console.log(chalk.bold.blue("\n📋 Available Task Lists:\n"));
+    console.log(chalk.bold.blue("\n📋 Available Task Lists:"));
     this.taskLists.forEach((list, index) => {
       const tasksQuantity = list.tasks.length;
       const id = list.id;
@@ -67,11 +67,11 @@ export class TaskListManager {
       const isDefault = list.isDefault ? chalk.yellow("🔧 Default") : "";
       const isArchived = list.isArchived ? chalk.red("🗃️  Archived") : "";
       const createdAt = list.createdAt
-        ? chalk.dim.black(`📅 ${formatTimestamp(list.createdAt)}`)
+        ? chalk.blackBright(`📅 ${formatTimestamp(list.createdAt)}`)
         : "";
       const updatedAt = list.updatedAt
-        ? chalk.dim.black(`📝 ${formatTimestamp(list.updatedAt)}`)
-        : chalk.dim.black("Not updated so far");
+        ? chalk.blackBright(`📝 ${formatTimestamp(list.updatedAt)}`)
+        : chalk.blackBright("Not updated so far");
 
       console.log(
         chalk.cyan(index + 1 + ". ") +

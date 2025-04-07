@@ -1,5 +1,7 @@
 import crypto from "crypto";
 import { formatTimestamp } from "../utils/formatTimestamp.js";
+import { priorityLevels } from "../utils/JSONLoader.js";
+import chalk from "chalk";
 
 /**
  * Represents an individual Task List.
@@ -69,6 +71,32 @@ export class TaskList {
     this.tasks = [];
   }
 
+  addTask(task) {
+    /**
+     * Adds a new task to the task list.
+     *
+     * @param {Object} task - The task object to add. It should include properties like:
+     *   - description {string}: A short text describing the task.
+     *   - priority {string}: The priority level of the task.
+     *
+     * @example
+     * // Adding a task to the task list
+     * taskList.addTask({ description: "Finish report", priority: "High" });
+     */
+    this.tasks.push(task);
+    const priority = priorityLevels.find(
+      (priority) => priority.value === task.priority
+    );
+    console.log(
+      chalk.whiteBright("✅ Task added: ") +
+        chalk.gray(`${task.description.slice(0, 36)}... `) +
+        chalk.whiteBright("To ") +
+        chalk.bold.green(`${this.name}.`) +
+        chalk.whiteBright("Priority: ") +
+        chalk.blueBright(`${priority.name}.`)
+    );
+  }
+
   updateFields(field, updatedField) {
     if (this.hasOwnProperty(field)) {
       this[field] = updatedField;
@@ -97,23 +125,7 @@ export class TaskList {
       isArchived: this.isArchived,
       createdAt: formatTimestamp(this.createdAt),
       updatedAt: this.updatedAt ? formatTimestamp(this.updatedAt) : null,
-      tasks: this.tasks.length + " tasks",
+      tasks: this.tasks,
     });
-  }
-
-  /**
-   * Adds a new task to the task list.
-   *
-   * @param {Object} task - The task object to add. It should include properties like:
-   *   - description {string}: A short text describing the task.
-   *   - priority {string}: The priority level of the task.
-   *
-   * @example
-   * // Adding a task to the task list
-   * taskList.addTask({ description: "Finish report", priority: "High" });
-   */
-  addTask(task) {
-    this.tasks.push(task);
-    console.log(`✅ Task added: ${task.description} (${task.priority})`);
   }
 }

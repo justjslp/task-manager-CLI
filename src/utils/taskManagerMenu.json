@@ -1,14 +1,12 @@
 [
   { "name": "🚀 Add Task", "value": 1 },
-  { "name": "✏️  Update Task", "value": 2 },
-  { "name": "🗑️  Delete Task", "value": 3 },
+  { "name": "✏️ Update Task", "value": 2 },
+  { "name": "🗑️ Delete Task", "value": 3 },
   { "name": "✅ Mark Task as Completed", "value": 4 },
   { "name": "🔄 Reopen Completed Task", "value": 5 },
   { "name": "📋 List All Tasks", "value": 6 },
   { "name": "🔎 Filter Tasks", "value": 7 },
-  { "name": "💾 Save Tasks to File", "value": 8 },
-  { "name": "📂 Load Tasks from File", "value": 9 },
-  { "name": "⚡ Update Task Priority", "value": 10 },
-  { "name": "📊 Sort Tasks", "value": 11 },
+  { "name": "⚡ Update Task Priority", "value": 8 },
+  { "name": "📊 Sort Tasks", "value": 9 },
   { "name": "🔙 Go Back", "value": 0 }
 ]
