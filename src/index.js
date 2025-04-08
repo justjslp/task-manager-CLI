@@ -1,9 +1,12 @@
-import inquirer from "inquirer";
-import open from "open"; // Make sure to install via `npm install open`
 import { mainMenu } from "./views/menu.js";
 import { TaskListManager } from "./models/TaskListManager.js";
 import chalk from "chalk";
 import { pastel } from "gradient-string";
+
+export function getTimeZone(){
+  const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  return localTimeZone;
+}
 
 async function main() {
   const title = `████████╗ █████╗ ███████╗██╗  ██╗    ██╗     ██╗███████╗████████╗    ███╗   ███╗ █████╗ ███╗   ██╗ █████╗  ██████╗ ███████╗██████╗      

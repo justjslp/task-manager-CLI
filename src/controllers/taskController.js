@@ -2,6 +2,7 @@ import inquirer from "inquirer";
 import { Task } from "../models/Task.js";
 import { priorityLevels } from "../utils/JSONLoader.js";
 import { formatLocalDate } from "../utils/dateFormat.js";
+import { parse } from "date-fns";
 
 export async function addTask(selectedTaskList) {
   const { description, dueDate, priority } = await inquirer.prompt([
@@ -20,13 +21,13 @@ export async function addTask(selectedTaskList) {
       name: "dueDate",
       message: "Enter the due date for the task (YYYY-MM-DD)",
       validate: async (input) => {
-        const dateParsed = Date.parse(input);
-        if (isNaN(dateParsed)) {
+        const localMidnight = parse(input, "yyyy-MM-dd", new Date());
+        if (isNaN(localMidnight)) {
           return "Please enter a valid date in the format YYYY-MM-DD.";
         }
-        
-        const inputFormattedLocal = await formatLocalDate(new Date(dateParsed));
-        const nowFormattedLocal = await formatLocalDate(new Date());
+
+        const inputFormattedLocal = formatLocalDate(localMidnight);
+        const nowFormattedLocal = formatLocalDate(Date.now());
         if (inputFormattedLocal < nowFormattedLocal) {
           return "Please enter a date that is after the current date.";
         }
@@ -40,7 +41,6 @@ export async function addTask(selectedTaskList) {
       choices: priorityLevels,
     },
   ]);
-
   const task = new Task(description, dueDate, priority);
   selectedTaskList.addTask(task);
   selectedTaskList.logTaskListState();

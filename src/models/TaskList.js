@@ -1,7 +1,7 @@
 import crypto from "crypto";
-import { formatTimestamp } from "../utils/formatTimestamp.js";
 import { priorityLevels } from "../utils/JSONLoader.js";
 import chalk from "chalk";
+import { formatLocalDate } from "../utils/dateFormat.js";
 
 /**
  * Represents an individual Task List.
@@ -27,7 +27,7 @@ export class TaskList {
     description,
     isDefault = false,
     isArchived = false,
-    createdAt = Date.now(),
+    createdAt = formatLocalDate(Date.now()),
     updatedAt = null
   ) {
     /**
@@ -52,13 +52,13 @@ export class TaskList {
      * Indicates if this is the default task list.
      * @type {boolean}
      */
-    this.isDefault = false;
+    this.isDefault = isDefault;
 
     /**
      * Mark a Task List as inactive instead of deleting it.
      * @type {boolean}
      */
-    this.isArchived = false;
+    this.isArchived = isArchived;
 
     this.createdAt = createdAt;
 
@@ -91,8 +91,8 @@ export class TaskList {
       chalk.whiteBright("✅ Task added: ") +
         chalk.gray(`${task.description.slice(0, 36)}... `) +
         chalk.whiteBright("To ") +
-        chalk.bold.green(`${this.name}.`) +
-        chalk.whiteBright("Priority: ") +
+        chalk.bold.green(`${this.name}`) +
+        chalk.whiteBright(". Priority: ") +
         chalk.blueBright(`${priority.name}.`)
     );
   }
@@ -100,7 +100,7 @@ export class TaskList {
   updateFields(field, updatedField) {
     if (this.hasOwnProperty(field)) {
       this[field] = updatedField;
-      this.updatedAt = Date.now();
+      this.updatedAt = formatLocalDate(Date.now());
       console.log(
         `✅ Field ${field} has been updated to ${updatedField} successfully!`
       );
@@ -123,8 +123,8 @@ export class TaskList {
       description: this.description,
       isDefault: this.isDefault,
       isArchived: this.isArchived,
-      createdAt: formatTimestamp(this.createdAt),
-      updatedAt: this.updatedAt ? formatTimestamp(this.updatedAt) : null,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt ? this.updatedAt : null,
       tasks: this.tasks,
     });
   }

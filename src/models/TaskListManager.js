@@ -1,6 +1,5 @@
 import crypto from "crypto";
 import chalk from "chalk";
-import { formatTimestamp } from "../utils/formatTimestamp.js";
 
 /**
  * Represents the manager of all the Task Lists.
@@ -67,10 +66,10 @@ export class TaskListManager {
       const isDefault = list.isDefault ? chalk.yellow("🔧 Default") : "";
       const isArchived = list.isArchived ? chalk.red("🗃️  Archived") : "";
       const createdAt = list.createdAt
-        ? chalk.blackBright(`📅 ${formatTimestamp(list.createdAt)}`)
+        ? chalk.blackBright(`📅 ${list.createdAt}`)
         : "";
       const updatedAt = list.updatedAt
-        ? chalk.blackBright(`📝 ${formatTimestamp(list.updatedAt)}`)
+        ? chalk.blackBright(`📝 ${list.updatedAt}`)
         : chalk.blackBright("Not updated so far");
 
       console.log(
@@ -78,8 +77,8 @@ export class TaskListManager {
           chalk.bold.green(`${name} `) +
           chalk.gray(`(ID: ${id.slice(0, 8)}...) `) +
           chalk.cyanBright(`${tasksQuantity} tasks. `) +
-          chalk.whiteBright(`Created at: ${createdAt}. `) +
-          chalk.whiteBright(`Updated at: ${updatedAt}. `) +
+          chalk.whiteBright(`Created at: ${createdAt} `) +
+          chalk.whiteBright(`Updated at: ${updatedAt} `) +
           chalk(`${isDefault} `) +
           chalk(`${isArchived}`)
       );

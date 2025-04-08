@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import { formatLocalDate } from "../utils/dateFormat.js";
-
+import { parse } from "date-fns";
 /**
  * Represents an individual Task.
  *
@@ -39,7 +39,8 @@ export class Task {
      * The due date for the task as a Date object.
      * @type {Date}
      */
-    this.dueDate = new Date(dueDate);
+
+    this.dueDate = formatLocalDate(parse(dueDate, "yyyy-MM-dd", new Date()));
 
     /**
      * The priority level of the task.
