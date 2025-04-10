@@ -1,8 +1,7 @@
 import { getTimeZone } from "../index.js";
 
-const localTimeZone = getTimeZone();
-
 export function formatLocalDate(dateUTC) {
+  const localTimeZone = getTimeZone();
 
   const currentLocale = Intl.DateTimeFormat().resolvedOptions().locale;
 

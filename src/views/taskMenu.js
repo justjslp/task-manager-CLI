@@ -1,5 +1,6 @@
 import inquirer from "inquirer";
 import { taskManagerMenu } from "../utils/JSONLoader.js";
+import { mainMenu } from "./menu.js";
 import {
   addTask,
   updateTask,
@@ -10,7 +11,6 @@ import {
   filterTasks,
   sortTasks,
 } from "../controllers/taskController.js";
-import { mainMenu } from "./menu.js";
 import chalk from "chalk";
 
 Object.freeze(taskManagerMenu);
@@ -25,6 +25,54 @@ Object.freeze(taskManagerMenu);
  * // Presents options (add, update, delete, view, mark as completed, reopen, list all tasks, filter, save to file, load from file, update priority, sort tasks) to manage Tasks.
  * await showTaskManagerMenu(selectedTaskList);
  */
+export async function selectedTaskMenu(selectedTaskList, manager) {
+  const { action } = await inquirer.prompt([
+    {
+      type: "list",
+      name: "action",
+      message: "Choose your Task List Manager action",
+      choices: taskManagerMenu,
+    },
+  ]);
+  switch (action) {
+    case 1:
+      await addTask(selectedTaskList, manager);
+      break;
+    case 2:
+      await updateTask(selectedTaskList, manager);
+      break;
+    case 3:
+      await deleteTask(selectedTaskList, manager);
+      break;
+    case 4:
+      await markTaskAsCompleted(selectedTaskList, manager);
+      break;
+    case 5:
+      await reopenCompletedTask(selectedTaskList, manager);
+      break;
+    case 6:
+      await displayTasks(selectedTaskList, manager);
+      break;
+    case 7:
+      await filterTasks(selectedTaskList, manager);
+      break;
+    case 8:
+      await updateTaskPriority(selectedTaskList, manager);
+      break;
+    case 8:
+      await sortTasks(selectedTaskList, manager);
+      break;
+    case "back":
+      await showTaskManagerMenu(manager);
+      break;
+    case "menu":
+      await mainMenu(manager);
+      break;
+    default:
+      console.warn(chalk.redBright("❌ Invalid option. Please try again."));
+  }
+}
+
 export async function showTaskManagerMenu(manager) {
   if (manager.taskLists.length === 0) {
     console.warn(
@@ -48,47 +96,5 @@ export async function showTaskManagerMenu(manager) {
   ]);
 
   const selectedTaskList = manager.getTaskList(selectedTaskId);
-
-  const { action } = await inquirer.prompt([
-    {
-      type: "list",
-      name: "action",
-      message: "Choose your Task List Manager action",
-      choices: taskManagerMenu,
-    },
-  ]);
-  switch (action) {
-    case 1:
-      await addTask(selectedTaskList);
-      break;
-    case 2:
-      await updateTask(selectedTaskList);
-      break;
-    case 3:
-      await deleteTask(selectedTaskList);
-      break;
-    case 4:
-      await markTaskAsCompleted(selectedTaskList);
-      break;
-    case 5:
-      await reopenCompletedTask(selectedTaskList);
-      break;
-    case 6:
-      await displayTasks(selectedTaskList);
-      break;
-    case 7:
-      await filterTasks(selectedTaskList);
-      break;
-    case 8:
-      await updateTaskPriority(selectedTaskList);
-      break;
-    case 8:
-      await sortTasks(selectedTaskList);
-      break;
-    case 0:
-      await mainMenu(selectedTaskList);
-      break;
-    default:
-      console.warn(chalk.redBright("❌ Invalid option. Please try again."));
-  }
+  await selectedTaskMenu(selectedTaskList, manager);
 }

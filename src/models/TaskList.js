@@ -1,7 +1,6 @@
 import crypto from "crypto";
 import { priorityLevels } from "../utils/JSONLoader.js";
 import chalk from "chalk";
-import { formatLocalDate } from "../utils/dateFormat.js";
 
 /**
  * Represents an individual Task List.
@@ -27,7 +26,7 @@ export class TaskList {
     description,
     isDefault = false,
     isArchived = false,
-    createdAt = formatLocalDate(Date.now()),
+    createdAt = Date.now(),
     updatedAt = null
   ) {
     /**
@@ -89,18 +88,22 @@ export class TaskList {
     );
     console.log(
       chalk.whiteBright("✅ Task added: ") +
-        chalk.gray(`${task.description.slice(0, 36)}... `) +
-        chalk.whiteBright("To ") +
+        chalk.gray(`${task.title}`) +
+        chalk.whiteBright(". To the Task List: ") +
         chalk.bold.green(`${this.name}`) +
         chalk.whiteBright(". Priority: ") +
         chalk.blueBright(`${priority.name}.`)
     );
   }
 
+  getTask(taskId) {
+    return this.tasks.find((task) => task.id === taskId);
+  }
+
   updateFields(field, updatedField) {
     if (this.hasOwnProperty(field)) {
       this[field] = updatedField;
-      this.updatedAt = formatLocalDate(Date.now());
+      this.updatedAt = Date.now();
       console.log(
         `✅ Field ${field} has been updated to ${updatedField} successfully!`
       );
@@ -109,11 +112,11 @@ export class TaskList {
     }
   }
 
-  deleteTaskListSelf(manager, selectedTaskList) {
+  deleteTaskListSelf(manager) {
     manager.taskLists = manager.taskLists.filter(
-      (task) => task.id !== selectedTaskList.id
+      (taskList) => taskList.id !== this.id
     );
-    console.log(`✅ Task List ${selectedTaskList.name} has been deleted.`);
+    console.log(`✅ Task List ${this.name} has been deleted.`);
   }
 
   logTaskListState() {

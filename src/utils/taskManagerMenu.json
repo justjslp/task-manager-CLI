@@ -8,5 +8,6 @@
   { "name": "🔎 Filter Tasks", "value": 7 },
   { "name": "⚡ Update Task Priority", "value": 8 },
   { "name": "📊 Sort Tasks", "value": 9 },
-  { "name": "🔙 Go Back", "value": 0 }
+  { "name": "🔙 Go Back", "value": "back" },
+  { "name": "🏠 Return to Main Menu", "value": "menu" }
 ]

@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import chalk from "chalk";
+import { formatLocalDate } from "../utils/dateFormat.js";
 
 /**
  * Represents the manager of all the Task Lists.
@@ -66,10 +67,10 @@ export class TaskListManager {
       const isDefault = list.isDefault ? chalk.yellow("🔧 Default") : "";
       const isArchived = list.isArchived ? chalk.red("🗃️  Archived") : "";
       const createdAt = list.createdAt
-        ? chalk.blackBright(`📅 ${list.createdAt}`)
+        ? chalk.blackBright(`📅 ${formatLocalDate(list.createdAt)}`)
         : "";
       const updatedAt = list.updatedAt
-        ? chalk.blackBright(`📝 ${list.updatedAt}`)
+        ? chalk.blackBright(`📝 ${formatLocalDate(list.updatedAt)}`)
         : chalk.blackBright("Not updated so far");
 
       console.log(

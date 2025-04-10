@@ -77,7 +77,7 @@ export async function updateTaskList(manager) {
 
   // Process updateAction here (implementation depends on your logic)
   switch (updateAction) {
-    case "updateName":
+    case 1:
       const { updatedName } = await inquirer.prompt([
         {
           type: "input",
@@ -96,7 +96,7 @@ export async function updateTaskList(manager) {
         selectedTaskList.updateFields("name", updatedName.trim());
       await showTaskListManagerMenu(manager);
       break;
-    case "updateDescription":
+    case 2:
       const { updatedDescription } = await inquirer.prompt([
         {
           type: "input",
@@ -115,7 +115,7 @@ export async function updateTaskList(manager) {
         selectedTaskList.updateFields("description", updatedDescription.trim());
       await showTaskListManagerMenu(manager);
       break;
-    case "toggleDefault":
+    case 3:
       const { toggleDefault } = await inquirer.prompt([
         {
           type: "confirm",
@@ -128,7 +128,7 @@ export async function updateTaskList(manager) {
       selectedTaskList.updateFields("isDefault", toggleDefault);
       await showTaskListManagerMenu(manager);
       break;
-    case "toggleArchived":
+    case 4:
       const { toggleArchived } = await inquirer.prompt([
         {
           type: "confirm",
@@ -144,8 +144,9 @@ export async function updateTaskList(manager) {
     case "back":
       await updateTaskList(manager);
       break;
-    case "menu":
+    case "managerMenu":
       await showTaskListManagerMenu(manager);
+      break;
     default:
       console.log("❌ Invalid option selected.");
   }
@@ -179,7 +180,7 @@ export async function deleteTaskList(manager) {
       default: false,
     },
   ]);
-  if (answer) selectedTaskList.deleteTaskListSelf(manager, selectedTaskList);
+  if (answer) selectedTaskList.deleteTaskListSelf(manager);
   await showTaskListManagerMenu(manager);
 }
 
