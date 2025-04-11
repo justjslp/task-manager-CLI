@@ -75,7 +75,6 @@ export async function updateTaskList(manager) {
     },
   ]);
 
-  // Process updateAction here (implementation depends on your logic)
   switch (updateAction) {
     case 1:
       const { updatedName } = await inquirer.prompt([
@@ -93,7 +92,7 @@ export async function updateTaskList(manager) {
         },
       ]);
       if (updatedName.trim() !== "")
-        selectedTaskList.updateFields("name", updatedName.trim());
+        selectedTaskList.updateTaskListFields("name", updatedName.trim());
       await showTaskListManagerMenu(manager);
       break;
     case 2:
@@ -112,7 +111,10 @@ export async function updateTaskList(manager) {
         },
       ]);
       if (updatedDescription.trim() !== "")
-        selectedTaskList.updateFields("description", updatedDescription.trim());
+        selectedTaskList.updateTaskListFields(
+          "description",
+          updatedDescription.trim()
+        );
       await showTaskListManagerMenu(manager);
       break;
     case 3:
@@ -121,11 +123,11 @@ export async function updateTaskList(manager) {
           type: "confirm",
           name: "toggleDefault",
           message:
-            "🕹️  Would you like to toggle the default status for this Task List?",
+            "🕹️ Would you like to toggle the default status for this Task List?",
           default: false,
         },
       ]);
-      selectedTaskList.updateFields("isDefault", toggleDefault);
+      selectedTaskList.updateTaskListFields("isDefault", toggleDefault);
       await showTaskListManagerMenu(manager);
       break;
     case 4:
@@ -134,11 +136,11 @@ export async function updateTaskList(manager) {
           type: "confirm",
           name: "toggleArchived",
           message:
-            "🕹️  Would you like to toggle the archived status for this Task List?",
+            "🕹️ Would you like to toggle the archived status for this Task List?",
           default: false,
         },
       ]);
-      selectedTaskList.updateFields("isArchived", toggleArchived);
+      selectedTaskList.updateTaskListFields("isArchived", toggleArchived);
       await showTaskListManagerMenu(manager);
       break;
     case "back":

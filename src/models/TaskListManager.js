@@ -59,7 +59,7 @@ export class TaskListManager {
   }
 
   getAllTasksLists() {
-    console.log(chalk.bold.blue("\n📋 Available Task Lists:"));
+    console.log(chalk.bold.blue("📋 Available Task Lists:"));
     this.taskLists.forEach((list, index) => {
       const tasksQuantity = list.tasks.length;
       const id = list.id;

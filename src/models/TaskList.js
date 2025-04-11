@@ -100,15 +100,21 @@ export class TaskList {
     return this.tasks.find((task) => task.id === taskId);
   }
 
-  updateFields(field, updatedField) {
+  updateTaskListFields(field, updatedField) {
     if (this.hasOwnProperty(field)) {
       this[field] = updatedField;
       this.updatedAt = Date.now();
       console.log(
-        `✅ Field ${field} has been updated to ${updatedField} successfully!`
+        "✅ Field " +
+          chalk.rgb(101, 101, 255).bold(field) +
+          " has been updated to " +
+          chalk.rgb(101, 101, 255).bold(updatedField) +
+          " successfully!"
       );
     } else {
-      console.warn(`⚠️  Field "${field}" does not exist in TaskList.`);
+      console.warn(
+        `⚠️ Field "${field}" does not exist in TaskList "${this.name}".`
+      );
     }
   }
 
@@ -116,7 +122,11 @@ export class TaskList {
     manager.taskLists = manager.taskLists.filter(
       (taskList) => taskList.id !== this.id
     );
-    console.log(`✅ Task List ${this.name} has been deleted.`);
+    console.log(
+      "✅ Task " +
+        chalk.rgb(101, 101, 255).bold(this.name) +
+        " has been deleted from successfully!"
+    );
   }
 
   logTaskListState() {

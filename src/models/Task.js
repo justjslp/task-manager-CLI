@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import chalk from "chalk";
 
 /**
  * Represents an individual Task.
@@ -12,7 +13,14 @@ import crypto from "crypto";
  * console.log(task.description); // "Finish the report"
  */
 export class Task {
-  constructor(title, description, dueDate, priority = 6, createdAt = Date.now(), updatedAt = null) {
+  constructor(
+    title,
+    description,
+    dueDate,
+    priority = 6,
+    createdAt = Date.now(),
+    updatedAt = null
+  ) {
     /**
      * A unique identifier for the Task.
      * @type {string}
@@ -62,12 +70,34 @@ export class Task {
     this.updatedAt = updatedAt;
   }
 
+  updatedTaskFields(field, updatedField) {
+    if (this.hasOwnProperty(field)) {
+      this[field] = updatedField;
+      this.updatedAt = Date.now();
+      console.log(
+        "✅ Field " +
+          chalk.rgb(101, 101, 255).bold(field) +
+          " has been updated to " +
+          chalk.rgb(101, 101, 255).bold(updatedField) +
+          " successfully!"
+      );
+    } else {
+      console.warn(
+        `⚠️ Field "${field}" does not exist in Task "${this.title}".`
+      );
+    }
+  }
+
   deleteTaskSelf(selectedTaskList) {
     selectedTaskList.tasks = selectedTaskList.tasks.filter(
       (task) => task.id !== this.id
     );
     console.log(
-      `✅ Task ${this.title} has been deleted from ${selectedTaskList.name}`
+      "✅ Task " +
+        chalk.rgb(101, 101, 255).bold(this.title) +
+        " has been deleted from " +
+        chalk.rgb(101, 101, 255).bold(selectedTaskList.name) +
+        " successfully!"
     );
   }
 }
