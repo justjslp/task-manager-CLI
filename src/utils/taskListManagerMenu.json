@@ -3,7 +3,7 @@
   { "name": "✏️ Update Task List", "value": 2 },
   { "name": "🗑️ Delete Task List", "value": 3 },
   { "name": "📋 View Task Lists", "value": 4 },
-  { "name": "💾 Save a Task List to File", "value": 5 },
-  { "name": "📂 Load Tasks from File", "value": 6 },
+  { "name": "💾 Save the Manager to File", "value": 5 },
+  { "name": "📂 Load the Manager from File", "value": 6 },
   { "name": "🔙 Go Back", "value": 0 }
 ]

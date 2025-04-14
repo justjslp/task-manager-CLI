@@ -48,7 +48,7 @@ This document outlines the primary use cases for the To-Do List Command-Line Int
 
 **Main Flow:**
 
-1. The user enters the command to update a task’s details (description, due date, or priority).
+1. The user enters the command to update a task’s details (title, description, due date, or priority).
 2. The system prompts for the new details.
 3. The system updates the selected task with the new information.
 

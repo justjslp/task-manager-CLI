@@ -5,6 +5,8 @@ import {
   updateTaskList,
   deleteTaskList,
   displayTasksLists,
+  saveTaskListsToFile,
+  loadTaskListsFromFile,
 } from "../controllers/taskListController.js";
 import { mainMenu } from "./menu.js";
 import chalk from "chalk";
@@ -45,6 +47,12 @@ export async function showTaskListManagerMenu(manager) {
       break;
     case 4:
       await displayTasksLists(manager);
+      break;
+    case 5:
+      await saveTaskListsToFile(manager);
+      break;
+    case 6:
+      await loadTaskListsFromFile(manager);
       break;
     case 0:
       await mainMenu(manager);

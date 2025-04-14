@@ -3,6 +3,7 @@ import { updateTaskListOptions } from "../utils/JSONLoader.js";
 import { TaskList } from "../models/TaskList.js";
 import { showTaskListManagerMenu } from "../views/taskListMenu.js";
 import chalk from "chalk";
+import fs from "fs";
 
 /**
  * Freeze JSON configuration objects to prevent accidental modification.
@@ -28,7 +29,7 @@ export async function createTaskList(manager) {
       validate: (input) =>
         input.length > 0 && input.length <= 50
           ? true
-          : "⚠️  Task List name must be between 1 and 50 characters.",
+          : "⚠️ Task List name must be between 1 and 50 characters.",
     },
     {
       type: "input",
@@ -38,7 +39,7 @@ export async function createTaskList(manager) {
       validate: (input) =>
         input.length > 0 && input.length <= 100
           ? true
-          : "⚠️  Task List description must be between 1 and 100 characters.",
+          : "⚠️ Task List description must be between 1 and 100 characters.",
     },
   ]);
   const newTaskList = new TaskList(
@@ -72,7 +73,6 @@ export async function updateTaskList(manager) {
   const selectedTaskList = manager.getTaskList(selectedTaskId);
   await updateTaskListField(manager, selectedTaskList);
 }
-
 async function updateTaskListField(manager, selectedTaskList) {
   const { updateTaskListAction } = await inquirer.prompt([
     {
@@ -93,7 +93,7 @@ async function updateTaskListField(manager, selectedTaskList) {
           validate: (input) =>
             input.length > 0 && input.length <= 50
               ? true
-              : "⚠️  Task List name must be between 1 and 50 characters.",
+              : "⚠️ Task List name must be between 1 and 50 characters.",
         },
       ]);
       selectedTaskList.updateTaskListFields("name", updatedName.trim());
@@ -108,7 +108,7 @@ async function updateTaskListField(manager, selectedTaskList) {
           validate: (input) =>
             input.length > 0 && input.length <= 100
               ? true
-              : "⚠️  Task List description must be between 1 and 100 characters.",
+              : "⚠️ Task List description must be between 1 and 100 characters.",
         },
       ]);
       selectedTaskList.updateTaskListFields(
@@ -198,3 +198,41 @@ export async function displayTasksLists(manager) {
   manager.getAllTasksLists();
   await showTaskListManagerMenu(manager);
 }
+
+export async function saveTaskListsToFile(manager) {
+  if (manager.taskLists.length === 0) {
+    console.warn(
+      chalk.redBright("⚠️ You haven't task lists available to save.")
+    );
+  }
+
+  const { managerName } = await inquirer.prompt([
+    {
+      type: "input",
+      name: "managerName",
+      message: "🛠️ Select the filename for your Task Lists Manager ",
+      validate: (input) =>
+        input.length > 0 && input.length <= 50
+          ? true
+          : "⚠️ Manager filename must be between 1 and 50 characters.",
+    },
+  ]);
+
+  const path = `data/${managerName}.json`;
+  const jsonManager = JSON.stringify(manager, null, 2);
+
+  fs.writeFileSync(path, jsonManager, "utf8");
+
+  const taskListNames = manager.taskLists
+    .map((taskList) => taskList.name)
+    .join(", ");
+  console.log(
+    chalk("The Task Lists: ") +
+      chalk.green.bold(taskListNames) +
+      " were save to " +
+      chalk.blueBright(path) +
+      chalk(" Successfully")
+  );
+}
+
+export async function loadTaskListsFromFile(manager) {}

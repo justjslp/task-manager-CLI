@@ -20,7 +20,7 @@ Object.freeze(menuOptions);
 export async function mainMenu(manager) {
   try {
     while (true) {
-      const answer = await inquirer.prompt([
+      const {selectedOption} = await inquirer.prompt([
         {
           type: "list",
           name: "selectedOption",
@@ -29,7 +29,7 @@ export async function mainMenu(manager) {
         },
       ]);
 
-      await handleMenuSelection(answer.selectedOption, manager);
+      await handleMenuSelection(manager, selectedOption);
     }
   } catch (error) {
     console.error("🚨 Unexpected error occurred!", error);
@@ -48,8 +48,8 @@ export async function mainMenu(manager) {
  * // Depending on the user's choice, various functions are executed.
  * await handleMenuSelection(1, manager);
  */
-async function handleMenuSelection(option, manager) {
-  switch (option) {
+async function handleMenuSelection(manager, selectedOption) {
+  switch (selectedOption) {
     case 1:
       await showTaskListManagerMenu(manager);
       break;

@@ -1,6 +1,6 @@
 [
-  { "name": "📋 Task List Manager Menu", "value": 1 },
-  { "name": "📝 Task Manager Menu", "value": 2 },
+  { "name": "📋 Task List Menu", "value": 1 },
+  { "name": "📝 Task Menu", "value": 2 },
   { "name": "🐙 justjslp Github's profile", "value": 3 },
   { "name": "👋 Exit", "value": 0 }
 ]

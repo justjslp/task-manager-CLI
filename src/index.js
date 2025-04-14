@@ -3,7 +3,7 @@ import { TaskListManager } from "./models/TaskListManager.js";
 import chalk from "chalk";
 import { pastel } from "gradient-string";
 
-export function getTimeZone(){
+export function getTimeZone() {
   const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   return localTimeZone;
 }
