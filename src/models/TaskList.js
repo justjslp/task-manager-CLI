@@ -88,9 +88,9 @@ export class TaskList {
     );
     console.log(
       chalk.whiteBright("✅ Task added: ") +
-        chalk.gray(`${task.title}`) +
+        chalk.gray.bold(`${task.title}`) +
         chalk.whiteBright(". To the Task List: ") +
-        chalk.bold.green(`${this.name}`) +
+        chalk.bold.green.bold(`${this.name}`) +
         chalk.whiteBright(". Priority: ") +
         chalk.blueBright(`${priority.name}.`)
     );
@@ -106,14 +106,16 @@ export class TaskList {
       this.updatedAt = Date.now();
       console.log(
         "✅ Field " +
-          chalk.rgb(101, 101, 255).bold(field) +
+          chalk.rgb(150, 124, 46).bold(field) +
           " has been updated to " +
           chalk.rgb(101, 101, 255).bold(updatedField) +
           " successfully!"
       );
     } else {
       console.warn(
-        `⚠️ Field "${field}" does not exist in TaskList "${this.name}".`
+        chalk.redBright(
+          `⚠️ Field "${field}" does not exist in TaskList "${this.name}".`
+        )
       );
     }
   }
@@ -123,9 +125,9 @@ export class TaskList {
       (taskList) => taskList.id !== this.id
     );
     console.log(
-      "✅ Task " +
-        chalk.rgb(101, 101, 255).bold(this.name) +
-        " has been deleted from successfully!"
+      "✅ Task List " +
+        chalk.green.bold(this.name) +
+        " has been deleted successfully!"
     );
   }
 

@@ -54,10 +54,18 @@ const taskListManagerMenu = await loadJSON("../utils/taskListManagerMenu.json");
 const taskManagerMenu = await loadJSON("../utils/taskManagerMenu.json");
 
 /**
- * The update task list options configuration loaded from "../assets/taskListManagerMenu.json".
+ * The update task list options configuration loaded from "../assets/updateTaskListOptions.json".
  * @type {Object}
  */
-const updateOptions = await loadJSON("../utils/updateTaskListOptions.json");
+const updateTaskListOptions = await loadJSON(
+  "../utils/updateTaskListOptions.json"
+);
+
+/**
+ * The update task options configuration loaded from "../assets/updateTaskOptions.json".
+ * @type {Object}
+ */
+const updateTaskOptions = await loadJSON("../utils/updateTaskOptions.json");
 
 /**
  * Exports the Task, TaskList, TaskListManager classes, along with the loaded JSON configurations.
@@ -67,7 +75,8 @@ const updateOptions = await loadJSON("../utils/updateTaskListOptions.json");
 export {
   menuOptions,
   taskListManagerMenu,
-  updateOptions,
+  updateTaskListOptions,
   taskManagerMenu,
   priorityLevels,
+  updateTaskOptions,
 };

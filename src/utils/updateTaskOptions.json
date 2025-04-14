@@ -1,0 +1,9 @@
+[
+  { "name": "📖 Update Title", "value": 1 },
+  { "name": "📝 Update Description", "value": 2 },
+  { "name": "📆 Update the Due Date", "value": 3 },
+  { "name": "‼️ Update Task Priority", "value": 4 },
+  { "name": "✅ Mark Task as Completed", "value": 5 },
+  { "name": "🔙 Go Back", "value": "back" },
+  { "name": "📝 Return to Task Manager Menu", "value": "taskManagerMenu" }
+]

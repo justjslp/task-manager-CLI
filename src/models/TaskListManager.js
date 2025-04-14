@@ -50,7 +50,9 @@ export class TaskListManager {
   addTaskList(taskList) {
     this.taskLists.push(taskList);
     console.log(
-      `✅ Task List "${taskList.name}" has been created successfully!`
+      "✅ Task List " +
+        chalk.bold.green(taskList.name) +
+        " has been created successfully!"
     );
   }
 
@@ -65,13 +67,13 @@ export class TaskListManager {
       const id = list.id;
       const name = list.name;
       const isDefault = list.isDefault ? chalk.yellow("🔧 Default") : "";
-      const isArchived = list.isArchived ? chalk.red("🗃️  Archived") : "";
+      const isArchived = list.isArchived ? chalk.red("🗃️ Archived") : "";
       const createdAt = list.createdAt
         ? chalk.blackBright(`📅 ${formatLocalDate(list.createdAt)}`)
         : "";
       const updatedAt = list.updatedAt
         ? chalk.blackBright(`📝 ${formatLocalDate(list.updatedAt)}`)
-        : chalk.blackBright("Not updated so far");
+        : chalk.blackBright("Not updated so far.");
 
       console.log(
         chalk.cyan(index + 1 + ". ") +

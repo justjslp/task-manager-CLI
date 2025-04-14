@@ -4,18 +4,19 @@ import { priorityLevels } from "../utils/JSONLoader.js";
 import { parse } from "date-fns";
 import chalk from "chalk";
 import { selectedTaskMenu } from "../views/taskMenu.js";
+import { updateTaskOptions } from "../utils/JSONLoader.js";
 
-export async function addTask(selectedTaskList, manager) {
+export async function addTask(manager, selectedTaskList) {
   const { title, description, dueDate, dueTime, priority } =
     await inquirer.prompt([
       {
         type: "input",
         name: "title",
-        message: "📝 Enter a title for your new Task (max 20 characters)",
+        message: "📝 Enter a title for your new Task (max 50 characters)",
         validate: (input) =>
-          input.length > 0 && input.length <= 20
+          input.length > 0 && input.length <= 50
             ? true
-            : "⚠️  Task title must be between 1 and 20 characters.",
+            : "⚠️  Task title must be between 1 and 50 characters.",
       },
       {
         type: "input",
@@ -75,20 +76,169 @@ export async function addTask(selectedTaskList, manager) {
     second
   ).getTime();
 
-  const newTask = new Task(title, description, combinedDate, priority);
+  const newTask = new Task(
+    title.trim(),
+    description.trim(),
+    combinedDate,
+    priority
+  );
   selectedTaskList.addTask(newTask);
   selectedTaskList.logTaskListState();
-  await selectedTaskMenu(selectedTaskList, manager);
+  await selectedTaskMenu(manager, selectedTaskList);
 }
 
-export async function updateTask(selectedTaskList, manager) {}
-
-export async function deleteTask(selectedTaskList, manager) {
+export async function updateTask(manager, selectedTaskList) {
   if (selectedTaskList.tasks.length === 0) {
     console.warn(
-      chalk.redBright("⚠️ You don't have tasks available to delete.")
+      chalk.redBright("⚠️ You haven't task lists available to update.")
     );
-    await selectedTaskMenu(selectedTaskList, manager);
+    await selectedTaskMenu(manager, selectedTaskList);
+  }
+
+  const { selectedTaskId } = await inquirer.prompt([
+    {
+      type: "list",
+      name: "selectedTaskId",
+      message: "🔄 Select a Task to update",
+      choices: selectedTaskList.tasks.map((list) => ({
+        name: list.title,
+        value: list.id,
+      })),
+    },
+  ]);
+
+  const selectedTask = selectedTaskList.getTask(selectedTaskId);
+
+  await updateTaskField(manager, selectedTaskList, selectedTask);
+}
+
+async function updateTaskField(manager, selectedTaskList, selectedTask) {
+  const { updateTaskAction } = await inquirer.prompt([
+    {
+      type: "list",
+      name: "updateTaskAction",
+      message: "📚 Select the field to update",
+      choices: updateTaskOptions,
+    },
+  ]);
+  switch (updateTaskAction) {
+    case 1:
+      const { updatedTitle } = await inquirer.prompt([
+        {
+          type: "input",
+          name: "updatedTitle",
+          message: "📝 Enter the new title for your Task",
+          validate: (input) =>
+            input.length > 0 && input.length <= 50
+              ? true
+              : "⚠️  Task title must be between 1 and 50 characters.",
+        },
+      ]);
+      selectedTask.updatedTaskFields("title", updatedTitle.trim());
+      await updateTaskField(manager, selectedTaskList, selectedTask);
+      break;
+    case 2:
+      const { updatedDescription } = await inquirer.prompt([
+        {
+          type: "input",
+          name: "updatedDescription",
+          message: "📝 Enter the new description for your Task",
+          validate: (input) =>
+            input.length > 0 && input.length <= 200
+              ? true
+              : "⚠️  Task title must be between 1 and 200 characters.",
+        },
+      ]);
+      selectedTask.updatedTaskFields("description", updatedDescription.trim());
+      await updateTaskField(manager, selectedTaskList, selectedTask);
+      break;
+    case 3:
+      const { dueDate, dueTime } = await inquirer.prompt([
+        {
+          type: "input",
+          name: "dueDate",
+          message: "📆 Enter the new due date for the task (YYYY-MM-DD)",
+          validate: async (input) => {
+            const dueDate = parse(input, "yyyy-MM-dd", new Date());
+            if (isNaN(dueDate)) {
+              return "Please enter a valid date in the format YYYY-MM-DD";
+            }
+            if (dueDate < new Date(Date.now())) {
+              return "Please enter a date that is after the current date.";
+            }
+            return true;
+          },
+        },
+        {
+          type: "input",
+          name: "dueTime",
+          message: "🕛 Enter the new due time for your new due date (hh:mm:ss)",
+          validate: async (input) => {
+            const timeRegex = /^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/;
+            if (!timeRegex.test(input)) {
+              return "Please enter a valid time in the format hh:mm:ss";
+            }
+            return true;
+          },
+        },
+      ]);
+
+      const [year, month, day] = dueDate.split("-").map(Number);
+      const [hour, minute, second] = dueTime.split(":").map(Number);
+
+      const combinedNewDate = new Date(
+        year,
+        month - 1,
+        day,
+        hour,
+        minute,
+        second
+      ).getTime();
+      selectedTask.updatedTaskFields("dueDate", combinedNewDate);
+
+      await updateTaskField(manager, selectedTaskList, selectedTask);
+      break;
+    case 4:
+      const { priority } = await inquirer.prompt([
+        {
+          type: "list",
+          name: "priority",
+          message: "Please select a priority for your task",
+          choices: priorityLevels,
+        },
+      ]);
+      selectedTask.updatedTaskFields("priority", priority);
+      await updateTaskField(manager, selectedTaskList, selectedTask);
+      break;
+    case 5:
+      const { toggleCompleted } = await inquirer.prompt([
+        {
+          type: "confirm",
+          name: "toggleCompleted",
+          message:
+            "🕹️ Would you like to toggle the completed status for this Task?",
+          default: false,
+        },
+      ]);
+
+      selectedTask.updatedTaskFields("completed", toggleCompleted);
+      await updateTaskField(manager, selectedTaskList, selectedTask);
+      break;
+    case "back":
+      await updateTask(manager, selectedTaskList);
+      break;
+    case "taskManagerMenu":
+      await selectedTaskMenu(manager, selectedTaskList);
+      break;
+  }
+}
+
+export async function deleteTask(manager, selectedTaskList) {
+  if (selectedTaskList.tasks.length === 0) {
+    console.warn(
+      chalk.redBright("⚠️ You haven't task lists available to delete.")
+    );
+    await selectedTaskMenu(manager, selectedTaskList);
   }
 
   const { selectedTaskId } = await inquirer.prompt([
@@ -114,51 +264,13 @@ export async function deleteTask(selectedTaskList, manager) {
     },
   ]);
   if (answer) selectedTask.deleteTaskSelf(selectedTaskList);
-  await selectedTaskMenu(selectedTaskList, manager);
+  await selectedTaskMenu(manager, selectedTaskList);
 }
 
-export async function markTaskAsCompleted(selectedTaskList, manager) {
-  if (selectedTaskList.tasks.length === 0) {
-    console.warn(chalk.redBright("⚠️  ⚠️  No Task Lists available."));
-    await selectedTaskMenu(selectedTaskList, manager);
-  }
+export async function reopenCompletedTask(manager, selectedTaskList) {}
 
-  const { selectedTaskId } = await inquirer.prompt([
-    {
-      type: "list",
-      name: "selectedTaskId",
-      message: "✅ Please select the task you want to mark as completed",
-      choices: selectedTaskList.tasks.map((task) => ({
-        name: task.title,
-        value: task.id,
-      })),
-    },
-  ]);
+export async function displayTasks(manager, selectedTaskList) {}
 
-  const selectedTask = selectedTaskList.getTask(selectedTaskId);
-  console.log(selectedTask);
+export async function filterTasks(manager, selectedTaskList) {}
 
-  const { toggleCompleted } = await inquirer.prompt([
-    {
-      type: "confirm",
-      name: "toggleCompleted",
-      message:
-        "🕹️ Would you like to toggle the completed status for this Task?",
-      default: false,
-    },
-  ]);
-
-  selectedTask.updatedTaskFields("completed", toggleCompleted);
-
-  await selectedTaskMenu(selectedTaskList, manager);
-}
-
-export async function reopenCompletedTask(selectedTaskList) {}
-
-export async function displayTasks(selectedTaskList) {}
-
-export async function filterTasks(selectedTaskList) {}
-
-export async function updateTaskPriority(selectedTaskList) {}
-
-export async function sortTasks(selectedTaskList) {}
+export async function sortTasks(manager, selectedTaskList) {}

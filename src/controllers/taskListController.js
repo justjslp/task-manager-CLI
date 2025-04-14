@@ -1,5 +1,5 @@
 import inquirer from "inquirer";
-import { updateOptions } from "../utils/JSONLoader.js";
+import { updateTaskListOptions } from "../utils/JSONLoader.js";
 import { TaskList } from "../models/TaskList.js";
 import { showTaskListManagerMenu } from "../views/taskListMenu.js";
 import chalk from "chalk";
@@ -7,7 +7,7 @@ import chalk from "chalk";
 /**
  * Freeze JSON configuration objects to prevent accidental modification.
  */
-Object.freeze(updateOptions);
+Object.freeze(updateTaskListOptions);
 
 /**
  * Prompts the user to create a new Task List.
@@ -24,11 +24,11 @@ export async function createTaskList(manager) {
     {
       type: "input",
       name: "taskListName",
-      message: "📝 Enter a name for your new Task List (max 20 characters)",
+      message: "📝 Enter a name for your new Task List (max 50 characters)",
       validate: (input) =>
-        input.length > 0 && input.length <= 20
+        input.length > 0 && input.length <= 50
           ? true
-          : "⚠️  Task List name must be between 1 and 20 characters.",
+          : "⚠️  Task List name must be between 1 and 50 characters.",
     },
     {
       type: "input",
@@ -41,15 +41,19 @@ export async function createTaskList(manager) {
           : "⚠️  Task List description must be between 1 and 100 characters.",
     },
   ]);
-
-  const newTaskList = new TaskList(taskListName, taskListDescription);
+  const newTaskList = new TaskList(
+    taskListName.trim(),
+    taskListDescription.trim()
+  );
   manager.addTaskList(newTaskList);
   await showTaskListManagerMenu(manager);
 }
 
 export async function updateTaskList(manager) {
   if (manager.taskLists.length === 0) {
-    console.warn(chalk.redBright("⚠️  No Task Lists available to update."));
+    console.warn(
+      chalk.redBright("⚠️ You haven't task lists available to update.")
+    );
     await showTaskListManagerMenu(manager);
   }
 
@@ -66,34 +70,34 @@ export async function updateTaskList(manager) {
   ]);
 
   const selectedTaskList = manager.getTaskList(selectedTaskId);
-  const { updateAction } = await inquirer.prompt([
+  await updateTaskListField(manager, selectedTaskList);
+}
+
+async function updateTaskListField(manager, selectedTaskList) {
+  const { updateTaskListAction } = await inquirer.prompt([
     {
       type: "list",
-      name: "updateAction",
+      name: "updateTaskListAction",
       message: "📚 Select the field to update",
-      choices: updateOptions,
+      choices: updateTaskListOptions,
     },
   ]);
 
-  switch (updateAction) {
+  switch (updateTaskListAction) {
     case 1:
       const { updatedName } = await inquirer.prompt([
         {
           type: "input",
           name: "updatedName",
           message: "📝 Enter the new name for your Task List",
-          validate: (input) => {
-            if (input.trim().length === 0)
-              return "⚠️ Task List name cannot be empty.";
-            if (input.length > 20)
-              return "⚠️ Task List name must be at most 20 characters.";
-            return true;
-          },
+          validate: (input) =>
+            input.length > 0 && input.length <= 50
+              ? true
+              : "⚠️  Task List name must be between 1 and 50 characters.",
         },
       ]);
-      if (updatedName.trim() !== "")
-        selectedTaskList.updateTaskListFields("name", updatedName.trim());
-      await showTaskListManagerMenu(manager);
+      selectedTaskList.updateTaskListFields("name", updatedName.trim());
+      await updateTaskListField(manager, selectedTaskList);
       break;
     case 2:
       const { updatedDescription } = await inquirer.prompt([
@@ -101,21 +105,17 @@ export async function updateTaskList(manager) {
           type: "input",
           name: "updatedDescription",
           message: "📝 Enter the new description for your Task List",
-          validate: (input) => {
-            if (input.trim().length === 0)
-              return "⚠️ Task List description cannot be empty.";
-            if (input.length > 100)
-              return "⚠️ Task List description must be at most 100 characters.";
-            return true;
-          },
+          validate: (input) =>
+            input.length > 0 && input.length <= 100
+              ? true
+              : "⚠️  Task List description must be between 1 and 100 characters.",
         },
       ]);
-      if (updatedDescription.trim() !== "")
-        selectedTaskList.updateTaskListFields(
-          "description",
-          updatedDescription.trim()
-        );
-      await showTaskListManagerMenu(manager);
+      selectedTaskList.updateTaskListFields(
+        "description",
+        updatedDescription.trim()
+      );
+      await updateTaskListField(manager, selectedTaskList);
       break;
     case 3:
       const { toggleDefault } = await inquirer.prompt([
@@ -128,7 +128,7 @@ export async function updateTaskList(manager) {
         },
       ]);
       selectedTaskList.updateTaskListFields("isDefault", toggleDefault);
-      await showTaskListManagerMenu(manager);
+      await updateTaskListField(manager, selectedTaskList);
       break;
     case 4:
       const { toggleArchived } = await inquirer.prompt([
@@ -141,22 +141,24 @@ export async function updateTaskList(manager) {
         },
       ]);
       selectedTaskList.updateTaskListFields("isArchived", toggleArchived);
-      await showTaskListManagerMenu(manager);
+      await updateTaskListField(manager, selectedTaskList);
       break;
     case "back":
       await updateTaskList(manager);
       break;
-    case "managerMenu":
+    case "taskListManagerMenu":
       await showTaskListManagerMenu(manager);
       break;
     default:
-      console.log("❌ Invalid option selected.");
+      console.warn(chalk.redBright("❌ Invalid option. Please try again."));
   }
 }
 
 export async function deleteTaskList(manager) {
   if (manager.taskLists.length === 0) {
-    console.warn(chalk.redBright("⚠️  No Task Lists available to delete."));
+    console.warn(
+      chalk.redBright("⚠️ You haven't task lists available to delete.")
+    );
     await showTaskListManagerMenu(manager);
   }
 
@@ -188,7 +190,9 @@ export async function deleteTaskList(manager) {
 
 export async function displayTasksLists(manager) {
   if (manager.taskLists.length === 0) {
-    console.warn(chalk.redBright("⚠️  No Task Lists available."));
+    console.warn(
+      chalk.redBright("⚠️ You don't have task lists available to delete.")
+    );
     await showTaskListManagerMenu(manager);
   }
   manager.getAllTasksLists();

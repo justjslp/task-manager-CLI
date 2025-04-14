@@ -5,7 +5,6 @@ import {
   addTask,
   updateTask,
   deleteTask,
-  markTaskAsCompleted,
   reopenCompletedTask,
   displayTasks,
   filterTasks,
@@ -25,7 +24,7 @@ Object.freeze(taskManagerMenu);
  * // Presents options (add, update, delete, view, mark as completed, reopen, list all tasks, filter, save to file, load from file, update priority, sort tasks) to manage Tasks.
  * await showTaskManagerMenu(selectedTaskList);
  */
-export async function selectedTaskMenu(selectedTaskList, manager) {
+export async function selectedTaskMenu(manager, selectedTaskList) {
   const { action } = await inquirer.prompt([
     {
       type: "list",
@@ -36,31 +35,25 @@ export async function selectedTaskMenu(selectedTaskList, manager) {
   ]);
   switch (action) {
     case 1:
-      await addTask(selectedTaskList, manager);
+      await addTask(manager, selectedTaskList);
       break;
     case 2:
-      await updateTask(selectedTaskList, manager);
+      await updateTask(manager, selectedTaskList);
       break;
     case 3:
-      await deleteTask(selectedTaskList, manager);
+      await deleteTask(manager, selectedTaskList);
       break;
     case 4:
-      await markTaskAsCompleted(selectedTaskList, manager);
+      await reopenCompletedTask(manager, selectedTaskList);
       break;
     case 5:
-      await reopenCompletedTask(selectedTaskList, manager);
+      await displayTasks(manager, selectedTaskList);
       break;
     case 6:
-      await displayTasks(selectedTaskList, manager);
+      await filterTasks(manager, selectedTaskList);
       break;
     case 7:
-      await filterTasks(selectedTaskList, manager);
-      break;
-    case 8:
-      await updateTaskPriority(selectedTaskList, manager);
-      break;
-    case 8:
-      await sortTasks(selectedTaskList, manager);
+      await sortTasks(manager, selectedTaskList);
       break;
     case "back":
       await showTaskManagerMenu(manager);
@@ -96,5 +89,5 @@ export async function showTaskManagerMenu(manager) {
   ]);
 
   const selectedTaskList = manager.getTaskList(selectedTaskId);
-  await selectedTaskMenu(selectedTaskList, manager);
+  await selectedTaskMenu(manager, selectedTaskList);
 }

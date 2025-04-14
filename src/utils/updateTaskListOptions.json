@@ -4,5 +4,5 @@
   { "name": "🔧 Toggle isDefault", "value": 3 },
   { "name": "🗃️ Toggle isArchived", "value": 4 },
   { "name": "🔙 Go Back", "value": "back" },
-  { "name": "🏠 Return to Task List Manager Menu", "value": "managerMenu" }
+  { "name": "📋 Return to Task List Manager Menu", "value": "taskListManagerMenu" }
 ]

@@ -76,14 +76,16 @@ export class Task {
       this.updatedAt = Date.now();
       console.log(
         "✅ Field " +
-          chalk.rgb(101, 101, 255).bold(field) +
+          chalk.rgb(150, 124, 46).bold(field) +
           " has been updated to " +
           chalk.rgb(101, 101, 255).bold(updatedField) +
           " successfully!"
       );
     } else {
       console.warn(
-        `⚠️ Field "${field}" does not exist in Task "${this.title}".`
+        chalk.redBright(
+          `⚠️ Field "${field}" does not exist in Task "${this.title}".`
+        )
       );
     }
   }
@@ -94,9 +96,9 @@ export class Task {
     );
     console.log(
       "✅ Task " +
-        chalk.rgb(101, 101, 255).bold(this.title) +
+        chalk.gray.bold(this.title) +
         " has been deleted from " +
-        chalk.rgb(101, 101, 255).bold(selectedTaskList.name) +
+        chalk.green.bold(selectedTaskList.name) +
         " successfully!"
     );
   }
