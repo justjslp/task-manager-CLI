@@ -23,18 +23,18 @@ export class TaskListManager {
    * The constructor initializes a unique identifier for the manager
    * and creates an empty array to store the TaskList objects.
    */
-  constructor() {
+  constructor(id = crypto.randomUUID(), taskLists = []) {
     /**
      * A unique identifier for the TaskListManager.
      * @type {string}
      */
-    this.id = crypto.randomUUID();
+    this.id = id;
 
     /**
      * An array that holds the TaskList objects.
      * @type {Array<Object>}
      */
-    this.taskLists = [];
+    this.taskLists = taskLists;
   }
 
   /**

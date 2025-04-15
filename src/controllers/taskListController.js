@@ -1,9 +1,11 @@
-import inquirer from "inquirer";
-import { updateTaskListOptions } from "../utils/JSONLoader.js";
-import { TaskList } from "../models/TaskList.js";
-import { showTaskListManagerMenu } from "../views/taskListMenu.js";
 import chalk from "chalk";
+import { format } from "date-fns";
 import fs from "fs";
+import inquirer from "inquirer";
+import { mainMenu } from "../views/menu.js";
+import { showTaskListManagerMenu } from "../views/taskListMenu.js";
+import { TaskList } from "../models/TaskList.js";
+import { updateTaskListOptions } from "../utils/JSONLoader.js";
 
 /**
  * Freeze JSON configuration objects to prevent accidental modification.
@@ -202,8 +204,9 @@ export async function displayTasksLists(manager) {
 export async function saveTaskListsToFile(manager) {
   if (manager.taskLists.length === 0) {
     console.warn(
-      chalk.redBright("⚠️ You haven't task lists available to save.")
+      chalk.redBright("⚠️ You don't have any task lists available to save.")
     );
+    await showTaskListManagerMenu(manager);
   }
 
   const { managerName } = await inquirer.prompt([
@@ -235,4 +238,91 @@ export async function saveTaskListsToFile(manager) {
   );
 }
 
-export async function loadTaskListsFromFile(manager) {}
+export async function loadTaskListsFromFile(manager) {
+  const dataDir = "data";
+
+  const files = fs
+    .readdirSync(dataDir)
+    .filter((file) => file.endsWith(".json"));
+
+  if (files.length === 0) {
+    console.warn(
+      chalk.redBright(
+        "⚠️ No saved Task List Manager were found in the 'data' directory."
+      )
+    );
+    await showTaskListManagerMenu(manager);
+  }
+
+  console.log(chalk.yellowBright("📋 Current manager summary:"));
+  if (manager.taskLists.length === 0) {
+    console.log(chalk.gray("No task lists in memory."));
+  } else {
+    console.log(
+      chalk.gray(`${manager.taskLists.length} task lists in memory:`)
+    );
+    manager.taskLists.forEach((list, i) => {
+      console.log(
+        `  ${i + 1}. ${chalk.bold.green(list.name)} ${chalk.cyanBright(
+          list.tasks.length
+        )} tasks.`
+      );
+    });
+    const { confirmSave } = await inquirer.prompt([
+      {
+        type: "confirm",
+        name: "confirmSave",
+        message:
+          "💾 Do you want to save your current work before loading another manager?",
+        default: true,
+      },
+    ]);
+
+    if (confirmSave) {
+      const timestamp = format(new Date(), "yyyyMMdd_HHmmss");
+      const backupPath = `${dataDir}/backup_${timestamp}.json`;
+      fs.writeFileSync(backupPath, JSON.stringify(manager, null, 2), "utf8");
+      console.log(chalk.green(`✅ Backup saved to: ${backupPath}`));
+    }
+  }
+
+  const { selectedFile } = await inquirer.prompt([
+    {
+      type: "list",
+      name: "selectedFile",
+      message: "📂 Select a Task Lists Manager file to load",
+      choices: files,
+    },
+  ]);
+
+  const { confirmLoad } = await inquirer.prompt([
+    {
+      type: "confirm",
+      name: "confirmLoad",
+      message: `⚠️ This will overwrite your current progress. Are you sure you want to load ${selectedFile}?`,
+      default: false,
+    },
+  ]);
+
+  if (!confirmLoad) {
+    console.log(chalk.blue("ℹ️ Load cancelled. Your data remains unchanged."));
+    await showTaskListManagerMenu(manager);
+  }
+
+  const path = `data/${selectedFile}`;
+  try {
+    const fileContent = fs.readFileSync(path, "utf8");
+    const parsedManager = JSON.parse(fileContent);
+    console.log(manager, parsedManager);
+    Object.assign(manager, parsedManager);
+
+    console.log(
+      chalk.greenBright("✅ Task Lists loaded successfully from ") +
+        chalk.blueBright(path)
+    );
+
+    await mainMenu(manager);
+  } catch (error) {
+    console.error(chalk.red("❌ Failed to load Task Lists:"), error.message);
+  }
+}
