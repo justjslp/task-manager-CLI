@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import fs from "fs";
 import inquirer from "inquirer";
 import { mainMenu } from "../views/menu.js";
-import { showTaskListManagerMenu } from "../views/taskListMenu.js";
+import { showTaskListMenu } from "../views/taskListMenu.js";
 import { TaskList } from "../models/TaskList.js";
 import { updateTaskListOptions } from "../utils/JSONLoader.js";
 
@@ -49,7 +49,7 @@ export async function createTaskList(manager) {
     taskListDescription.trim()
   );
   manager.addTaskList(newTaskList);
-  await showTaskListManagerMenu(manager);
+  await showTaskListMenu(manager);
 }
 
 export async function updateTaskList(manager) {
@@ -57,7 +57,7 @@ export async function updateTaskList(manager) {
     console.warn(
       chalk.redBright("⚠️ You haven't task lists available to update.")
     );
-    await showTaskListManagerMenu(manager);
+    await showTaskListMenu(manager);
   }
 
   const { selectedTaskId } = await inquirer.prompt([
@@ -122,34 +122,44 @@ async function updateTaskListField(manager, selectedTaskList) {
     case 3:
       const { toggleDefault } = await inquirer.prompt([
         {
-          type: "confirm",
+          type: "list",
           name: "toggleDefault",
           message:
             "🕹️ Would you like to toggle the default status for this Task List?",
-          default: false,
+          choices: [
+            { name: "📌 Mark as Default", value: 1 },
+            { name: "⚪ Mark as Not Default", value: 2 },
+          ],
         },
       ]);
-      selectedTaskList.updateTaskListFields("isDefault", toggleDefault);
+      if (toggleDefault === 1)
+        selectedTaskList.updateTaskListFields("isDefault", true);
+      else selectedTaskList.updateTaskListFields("isDefault", false);
       await updateTaskListField(manager, selectedTaskList);
       break;
     case 4:
       const { toggleArchived } = await inquirer.prompt([
         {
-          type: "confirm",
+          type: "list",
           name: "toggleArchived",
           message:
             "🕹️ Would you like to toggle the archived status for this Task List?",
-          default: false,
+          choices: [
+            { name: "🗂️ Mark as Archived", value: 1 },
+            { name: "📁 Mark as Not Archived", value: 2 },
+          ],
         },
       ]);
-      selectedTaskList.updateTaskListFields("isArchived", toggleArchived);
+      if (toggleArchived === 1)
+        selectedTaskList.updateTaskListFields("isArchived", true);
+      else selectedTaskList.updateTaskListFields("isArchived", false);
       await updateTaskListField(manager, selectedTaskList);
       break;
     case "back":
       await updateTaskList(manager);
       break;
-    case "taskListManagerMenu":
-      await showTaskListManagerMenu(manager);
+    case "taskListMenu":
+      await showTaskListMenu(manager);
       break;
     default:
       console.warn(chalk.redBright("❌ Invalid option. Please try again."));
@@ -161,7 +171,7 @@ export async function deleteTaskList(manager) {
     console.warn(
       chalk.redBright("⚠️ You haven't task lists available to delete.")
     );
-    await showTaskListManagerMenu(manager);
+    await showTaskListMenu(manager);
   }
 
   const { selectedTaskId } = await inquirer.prompt([
@@ -187,7 +197,7 @@ export async function deleteTaskList(manager) {
     },
   ]);
   if (answer) selectedTaskList.deleteTaskListSelf(manager);
-  await showTaskListManagerMenu(manager);
+  await showTaskListMenu(manager);
 }
 
 export async function displayTasksLists(manager) {
@@ -195,10 +205,10 @@ export async function displayTasksLists(manager) {
     console.warn(
       chalk.redBright("⚠️ You don't have task lists available to delete.")
     );
-    await showTaskListManagerMenu(manager);
+    await showTaskListMenu(manager);
   }
   manager.getAllTasksLists();
-  await showTaskListManagerMenu(manager);
+  await showTaskListMenu(manager);
 }
 
 export async function saveTaskListsToFile(manager) {
@@ -206,7 +216,7 @@ export async function saveTaskListsToFile(manager) {
     console.warn(
       chalk.redBright("⚠️ You don't have any task lists available to save.")
     );
-    await showTaskListManagerMenu(manager);
+    await showTaskListMenu(manager);
   }
 
   const { managerName } = await inquirer.prompt([
@@ -251,7 +261,7 @@ export async function loadTaskListsFromFile(manager) {
         "⚠️ No saved Task List Manager were found in the 'data' directory."
       )
     );
-    await showTaskListManagerMenu(manager);
+    await showTaskListMenu(manager);
   }
 
   console.log(chalk.yellowBright("📋 Current manager summary:"));
@@ -306,7 +316,7 @@ export async function loadTaskListsFromFile(manager) {
 
   if (!confirmLoad) {
     console.log(chalk.blue("ℹ️ Load cancelled. Your data remains unchanged."));
-    await showTaskListManagerMenu(manager);
+    await showTaskListMenu(manager);
   }
 
   const path = `data/${selectedFile}`;

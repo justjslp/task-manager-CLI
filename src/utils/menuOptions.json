@@ -2,5 +2,6 @@
   { "name": "📋 Task List Menu", "value": 1 },
   { "name": "📝 Task Menu", "value": 2 },
   { "name": "🐙 justjslp Github's profile", "value": 3 },
+  { "name": "⚙️ Settings", "value": 4 },
   { "name": "👋 Exit", "value": 0 }
 ]

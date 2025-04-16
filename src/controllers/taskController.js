@@ -22,11 +22,11 @@ export async function addTask(manager, selectedTaskList) {
         type: "input",
         name: "description",
         message:
-          "📝 Enter a description for your new Task List (max 200 characters)",
+          "📝 Enter a description for your new Task List (max 300 characters)",
         validate: (input) =>
-          input.length > 0 && input.length <= 200
+          input.length > 0 && input.length <= 300
             ? true
-            : "⚠️  Task List description must be between 1 and 200 characters.",
+            : "⚠️  Task List description must be between 1 and 300 characters.",
       },
       {
         type: "input",
@@ -144,9 +144,9 @@ async function updateTaskField(manager, selectedTaskList, selectedTask) {
           name: "updatedDescription",
           message: "📝 Enter the new description for your Task",
           validate: (input) =>
-            input.length > 0 && input.length <= 200
+            input.length > 0 && input.length <= 300
               ? true
-              : "⚠️  Task title must be between 1 and 200 characters.",
+              : "⚠️  Task title must be between 1 and 300 characters.",
         },
       ]);
       selectedTask.updatedTaskFields("description", updatedDescription.trim());
@@ -213,21 +213,25 @@ async function updateTaskField(manager, selectedTaskList, selectedTask) {
     case 5:
       const { toggleCompleted } = await inquirer.prompt([
         {
-          type: "confirm",
+          type: "list",
           name: "toggleCompleted",
           message:
             "🕹️ Would you like to toggle the completed status for this Task?",
-          default: false,
+          choices: [
+            { name: "✔️ Mark as Completed", value: 1 },
+            { name: "✖️ Mark as Not Completed", value: 2 },
+          ],
         },
       ]);
-
-      selectedTask.updatedTaskFields("completed", toggleCompleted);
+      if (toggleCompleted === 1)
+        selectedTask.updatedTaskFields("completed", true);
+      else selectedTask.updatedTaskFields("completed", false);
       await updateTaskField(manager, selectedTaskList, selectedTask);
       break;
     case "back":
       await updateTask(manager, selectedTaskList);
       break;
-    case "taskManagerMenu":
+    case "taskMenu":
       await selectedTaskMenu(manager, selectedTaskList);
       break;
   }

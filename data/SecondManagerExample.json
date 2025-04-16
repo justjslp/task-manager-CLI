@@ -1,0 +1,26 @@
+{
+  "id": "8c171bb2-9008-4943-8912-ed4489018c7f",
+  "taskLists": [
+    {
+      "id": "b0b9a5bf-3290-495a-9746-2cd017b443f3",
+      "name": "ThisIsTheSecondManagerFirstTaskListExample",
+      "description": "Some Task List, description...",
+      "isDefault": false,
+      "isArchived": false,
+      "createdAt": 1744716371575,
+      "updatedAt": null,
+      "tasks": [
+        {
+          "id": "4e3dedea-b2e7-45ff-822e-65e2978fccba",
+          "title": "ThisIsTheFirstTaskFromSecondManagerFirstTaskList",
+          "description": "Some description...",
+          "dueDate": 1767200340000,
+          "priority": 1,
+          "completed": false,
+          "createdAt": 1744716448298,
+          "updatedAt": 1744716463054
+        }
+      ]
+    }
+  ]
+}

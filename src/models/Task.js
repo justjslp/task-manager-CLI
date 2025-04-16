@@ -1,5 +1,7 @@
 import crypto from "crypto";
 import chalk from "chalk";
+import { formatLocalDate } from "../utils/dateFormat.js";
+import { priorityLevels } from "../utils/JSONLoader.js";
 
 /**
  * Represents an individual Task.
@@ -18,6 +20,7 @@ export class Task {
     description,
     dueDate,
     priority = 6,
+    completed = false,
     createdAt = Date.now(),
     updatedAt = null
   ) {
@@ -59,7 +62,7 @@ export class Task {
      * Indicates whether the task is completed.
      * @type {boolean}
      */
-    this.completed = false;
+    this.completed = completed;
 
     /**
      * The timestamp representing when the task was created.
@@ -78,8 +81,19 @@ export class Task {
         "✅ Field " +
           chalk.rgb(150, 124, 46).bold(field) +
           " has been updated to " +
-          chalk.rgb(101, 101, 255).bold(updatedField) +
-          " successfully!"
+          (field === "description"
+            ? chalk.rgb(101, 101, 255).bold(`${updatedField.slice(0, 16)}...`)
+            : field === "dueDate"
+            ? chalk.rgb(101, 101, 255).bold(formatLocalDate(updatedField))
+            : field === "priority"
+            ? chalk
+                .rgb(101, 101, 255)
+                .bold(foundPriority ? foundPriority.name : "Not found")
+            : field === "completed"
+            ? updatedField
+              ? chalk.rgb(101, 101, 255).bold("Completed")
+              : chalk.rgb(101, 101, 255).bold("Not Completed")
+            : chalk.rgb(101, 101, 255).bold(updatedField) + " successfully!")
       );
     } else {
       console.warn(

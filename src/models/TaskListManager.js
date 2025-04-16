@@ -66,8 +66,8 @@ export class TaskListManager {
       const tasksQuantity = list.tasks.length;
       const id = list.id;
       const name = list.name;
-      const isDefault = list.isDefault ? chalk.yellow("🔧 Default") : "";
-      const isArchived = list.isArchived ? chalk.red("🗃️ Archived") : "";
+      const isDefault = list.isDefault ? chalk.blue("🔧 Default") : "";
+      const isArchived = list.isArchived ? chalk.yellow("🗃️ Archived") : "";
       const createdAt = list.createdAt
         ? chalk.blackBright(`📅 ${formatLocalDate(list.createdAt)}`)
         : "";

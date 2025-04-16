@@ -5,5 +5,5 @@
   { "name": "‼️ Update Task Priority", "value": 4 },
   { "name": "✅ Mark Task as Completed", "value": 5 },
   { "name": "🔙 Go Back", "value": "back" },
-  { "name": "📝 Return to Task Manager Menu", "value": "taskManagerMenu" }
+  { "name": "📝 Return to Task Menu", "value": "taskMenu" }
 ]

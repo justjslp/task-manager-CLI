@@ -1,5 +1,5 @@
 import inquirer from "inquirer";
-import { taskManagerMenu } from "../utils/JSONLoader.js";
+import { taskMenu } from "../utils/JSONLoader.js";
 import { mainMenu } from "./menu.js";
 import {
   addTask,
@@ -12,7 +12,7 @@ import {
 } from "../controllers/taskController.js";
 import chalk from "chalk";
 
-Object.freeze(taskManagerMenu);
+Object.freeze(taskMenu);
 
 /**
  * Displays the Task Manager menu and handles the selected action.
@@ -22,7 +22,7 @@ Object.freeze(taskManagerMenu);
  *
  * @example
  * // Presents options (add, update, delete, view, mark as completed, reopen, list all tasks, filter, save to file, load from file, update priority, sort tasks) to manage Tasks.
- * await showTaskManagerMenu(selectedTaskList);
+ * await showTaskMenu(selectedTaskList);
  */
 export async function selectedTaskMenu(manager, selectedTaskList) {
   const { action } = await inquirer.prompt([
@@ -30,7 +30,7 @@ export async function selectedTaskMenu(manager, selectedTaskList) {
       type: "list",
       name: "action",
       message: "Choose your Task List Manager action",
-      choices: taskManagerMenu,
+      choices: taskMenu,
     },
   ]);
   switch (action) {
@@ -66,7 +66,7 @@ export async function selectedTaskMenu(manager, selectedTaskList) {
   }
 }
 
-export async function showTaskManagerMenu(manager) {
+export async function showTaskMenu(manager) {
   if (manager.taskLists.length === 0) {
     console.warn(
       chalk.redBright(

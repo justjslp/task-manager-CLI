@@ -1,0 +1,47 @@
+{
+  "id": "3b23f162-eea7-4e86-acb2-7491248755cc",
+  "taskLists": [
+    {
+      "id": "f74d2282-5d1c-4f49-a3a0-9fd49e0d2a43",
+      "name": "ThisIsTheFirstTaskListExample",
+      "description": "Some description...",
+      "isDefault": true,
+      "isArchived": false,
+      "createdAt": 1744716046997,
+      "updatedAt": 1744716115068,
+      "tasks": [
+        {
+          "id": "6c4aff59-c59b-4867-a490-253b09f8c9ce",
+          "title": "ThisIsTheFirstTaskOfTheFirstTaskListExample",
+          "description": "Some Task description...",
+          "dueDate": 1767200340000,
+          "priority": 2,
+          "completed": false,
+          "createdAt": 1744716200628,
+          "updatedAt": null
+        }
+      ]
+    },
+    {
+      "id": "cfa9d63e-6716-4fc9-9c32-08afa6129a72",
+      "name": "ThisIsTheSecondTaskListExample",
+      "description": "Again, some description...",
+      "isDefault": false,
+      "isArchived": false,
+      "createdAt": 1744716069038,
+      "updatedAt": null,
+      "tasks": [
+        {
+          "id": "d0865352-bdcb-4b4e-8107-f0b2ae0b33d4",
+          "title": "ThisIsTheFirstTaskOfTheSecondTaskListExample",
+          "description": "Again, some Task description...",
+          "dueDate": 1767200340000,
+          "priority": 2,
+          "completed": false,
+          "createdAt": 1744716255248,
+          "updatedAt": 1744716295090
+        }
+      ]
+    }
+  ]
+}

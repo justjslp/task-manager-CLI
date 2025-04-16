@@ -1,5 +1,5 @@
 import inquirer from "inquirer";
-import { taskListManagerMenu } from "../utils/JSONLoader.js";
+import { taskListMenu } from "../utils/JSONLoader.js";
 import {
   createTaskList,
   updateTaskList,
@@ -14,7 +14,7 @@ import chalk from "chalk";
 /**
  * Freeze JSON configuration objects to prevent accidental modification.
  */
-Object.freeze(taskListManagerMenu);
+Object.freeze(taskListMenu);
 
 /**
  * Displays the Task List Manager menu and handles the selected action.
@@ -24,15 +24,15 @@ Object.freeze(taskListManagerMenu);
  *
  * @example
  * // Presents options (create, update, delete, view, back) to manage Task Lists.
- * await showTaskListManagerMenu(manager);
+ * await showTaskListMenu(manager);
  */
-export async function showTaskListManagerMenu(manager) {
+export async function showTaskListMenu(manager) {
   const { action } = await inquirer.prompt([
     {
       type: "list",
       name: "action",
       message: "Choose your Task List Manager action",
-      choices: taskListManagerMenu,
+      choices: taskListMenu,
     },
   ]);
   switch (action) {

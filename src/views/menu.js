@@ -1,6 +1,6 @@
 import inquirer from "inquirer";
-import { showTaskListManagerMenu } from "./taskListMenu.js";
-import { showTaskManagerMenu } from "./taskMenu.js";
+import { showTaskListMenu } from "./taskListMenu.js";
+import { showTaskMenu } from "./taskMenu.js";
 import { openGithubProfile } from "./openGithubProfile.js";
 import { menuOptions } from "../utils/JSONLoader.js";
 import chalk from "chalk";
@@ -41,7 +41,7 @@ export async function mainMenu(manager) {
  *
  * @async
  * @param {number} option - The numerical option selected by the user.
- * @param {TaskListManager} manager - The TaskListManager instance to operate on.
+ * @param {TaskList} manager - The TaskList instance to operate on.
  * @returns {Promise<void>}
  *
  * @example
@@ -51,13 +51,16 @@ export async function mainMenu(manager) {
 async function handleMenuSelection(manager, selectedOption) {
   switch (selectedOption) {
     case 1:
-      await showTaskListManagerMenu(manager);
+      await showTaskListMenu(manager);
       break;
     case 2:
-      await showTaskManagerMenu(manager);
+      await showTaskMenu(manager);
       break;
     case 3:
       await openGithubProfile();
+      break;
+    case 4:
+      await options(manager);
       break;
     case 0:
       console.log(chalk.greenBright("👋 Exiting..."));

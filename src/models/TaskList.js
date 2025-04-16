@@ -108,8 +108,17 @@ export class TaskList {
         "✅ Field " +
           chalk.rgb(150, 124, 46).bold(field) +
           " has been updated to " +
-          chalk.rgb(101, 101, 255).bold(updatedField) +
-          " successfully!"
+          (field === "description"
+            ? chalk.rgb(101, 101, 255).bold(`${updatedField.slice(0, 16)}...`)
+            : field === "isDefault"
+            ? updatedField
+              ? chalk.rgb(101, 101, 255).bold("Default Task List")
+              : chalk.rgb(101, 101, 255).bold("Task List Not Default")
+            : field === "isArchived"
+            ? updatedField
+              ? chalk.rgb(101, 101, 255).bold("Task List Archived")
+              : chalk.rgb(101, 101, 255).bold("Task List Not Archived")
+            : chalk.rgb(101, 101, 255).bold(updatedField) + " successfully!")
       );
     } else {
       console.warn(
