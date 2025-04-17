@@ -88,10 +88,8 @@ export async function addTask(manager, selectedTaskList) {
 }
 
 export async function updateTask(manager, selectedTaskList) {
-  if (selectedTaskList.tasks.length === 0) {
-    console.warn(
-      chalk.redBright("⚠️ You haven't task lists available to update.")
-    );
+  if (selectedTaskList.nonCompletedTasks.length === 0) {
+    console.warn(chalk.redBright("⚠️ You haven't tasks available to update."));
     await selectedTaskMenu(manager, selectedTaskList);
   }
 
@@ -100,7 +98,7 @@ export async function updateTask(manager, selectedTaskList) {
       type: "list",
       name: "selectedTaskId",
       message: "🔄 Select a Task to update",
-      choices: selectedTaskList.tasks.map((list) => ({
+      choices: selectedTaskList.nonCompletedTasks.map((list) => ({
         name: list.title,
         value: list.id,
       })),
@@ -223,10 +221,13 @@ async function updateTaskField(manager, selectedTaskList, selectedTask) {
           ],
         },
       ]);
-      if (toggleCompleted === 1)
+      if (toggleCompleted === 1) {
         selectedTask.updatedTaskFields("completed", true);
-      else selectedTask.updatedTaskFields("completed", false);
-      await updateTaskField(manager, selectedTaskList, selectedTask);
+        selectedTaskList.completedTasks.push(selectedTask);
+        selectedTask.deleteTaskSelf(selectedTaskList);
+      } else selectedTask.updatedTaskFields("completed", false);
+      selectedTask.completedAt = new Date(Date.now());
+      await selectedTaskMenu(manager, selectedTaskList);
       break;
     case "back":
       await updateTask(manager, selectedTaskList);
@@ -238,7 +239,7 @@ async function updateTaskField(manager, selectedTaskList, selectedTask) {
 }
 
 export async function deleteTask(manager, selectedTaskList) {
-  if (selectedTaskList.tasks.length === 0) {
+  if (selectedTaskList.nonCompletedTasks.length === 0) {
     console.warn(
       chalk.redBright("⚠️ You haven't task lists available to delete.")
     );
@@ -250,7 +251,7 @@ export async function deleteTask(manager, selectedTaskList) {
       type: "list",
       name: "selectedTaskId",
       message: "🗑️ Select a Task to delete.",
-      choices: selectedTaskList.tasks.map((list) => ({
+      choices: selectedTaskList.nonCompletedTasks.map((list) => ({
         name: list.title,
         value: list.id,
       })),
@@ -273,7 +274,40 @@ export async function deleteTask(manager, selectedTaskList) {
 
 export async function reopenCompletedTask(manager, selectedTaskList) {}
 
-export async function displayTasks(manager, selectedTaskList) {}
+export async function displayTasks(manager, selectedTaskList) {
+  if (
+    selectedTaskList.nonCompletedTasks.length === 0 &&
+    selectedTaskList.completedTasks.length === 0
+  ) {
+    console.warn(chalk.redBright("⚠️ You haven't tasks available to display."));
+    await selectedTaskMenu(manager, selectedTaskList);
+  }
+
+  const { displayFilter } = await inquirer.prompt([
+    {
+      type: "list",
+      name: "displayFilter",
+      message: "📝 Which tasks would you like to see?",
+      choices: [
+        { name: "✅ Completed Tasks", value: 1 },
+        { name: "⏳ Non Completed Tasks", value: 2 },
+        { name: "📋 All Tasks", value: 3 },
+      ],
+    },
+  ]);
+
+  if (displayFilter === 1) {
+    if (selectedTaskList.completedTasks.length === 0) {
+      console.warn(
+        chalk.redBright("⚠️ You haven't completed tasks available to display.")
+      );
+      await selectedTaskMenu(manager, selectedTaskList);
+    } else selectedTaskList.getCompletedTasks();
+  } else if (displayFilter === 2) selectedTaskList.getNonCompletedTasks();
+  else selectedTaskList.getAllTasksLists();
+
+  await selectedTaskMenu(manager, selectedTaskList);
+}
 
 export async function filterTasks(manager, selectedTaskList) {}
 

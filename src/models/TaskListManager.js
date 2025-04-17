@@ -23,7 +23,12 @@ export class TaskListManager {
    * The constructor initializes a unique identifier for the manager
    * and creates an empty array to store the TaskList objects.
    */
-  constructor(id = crypto.randomUUID(), taskLists = []) {
+  constructor(
+    id = crypto.randomUUID(),
+    taskLists = [],
+    archivedTaskList = [],
+    createdAt = new Date(Date.now())
+  ) {
     /**
      * A unique identifier for the TaskListManager.
      * @type {string}
@@ -35,6 +40,10 @@ export class TaskListManager {
      * @type {Array<Object>}
      */
     this.taskLists = taskLists;
+
+    this.archivedTaskList = archivedTaskList;
+
+    this.createdAt = createdAt;
   }
 
   /**
@@ -63,11 +72,15 @@ export class TaskListManager {
   getAllTasksLists() {
     console.log(chalk.bold.blue("📋 Available Task Lists:"));
     this.taskLists.forEach((list, index) => {
-      const tasksQuantity = list.tasks.length;
+      const tasksQuantity = list.nonCompletedTasks.length;
       const id = list.id;
       const name = list.name;
-      const isDefault = list.isDefault ? chalk.blue("🔧 Default") : "";
-      const isArchived = list.isArchived ? chalk.yellow("🗃️ Archived") : "";
+      const isDefault = list.isDefault
+        ? chalk.rgb(194, 191, 188).bold("🔧 Default")
+        : "";
+      const isArchived = list.isArchived
+        ? chalk.rgb(251, 200, 70).bold("🗃️ Archived")
+        : "";
       const createdAt = list.createdAt
         ? chalk.blackBright(`📅 ${formatLocalDate(list.createdAt)}`)
         : "";

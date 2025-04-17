@@ -203,7 +203,7 @@ export async function deleteTaskList(manager) {
 export async function displayTasksLists(manager) {
   if (manager.taskLists.length === 0) {
     console.warn(
-      chalk.redBright("⚠️ You don't have task lists available to delete.")
+      chalk.redBright("⚠️ You haven't task lists available to display.")
     );
     await showTaskListMenu(manager);
   }
@@ -278,22 +278,23 @@ export async function loadTaskListsFromFile(manager) {
         )} tasks.`
       );
     });
-    const { confirmSave } = await inquirer.prompt([
-      {
-        type: "confirm",
-        name: "confirmSave",
-        message:
-          "💾 Do you want to save your current work before loading another manager?",
-        default: true,
-      },
-    ]);
+  }
 
-    if (confirmSave) {
-      const timestamp = format(new Date(), "yyyyMMdd_HHmmss");
-      const backupPath = `${dataDir}/backup_${timestamp}.json`;
-      fs.writeFileSync(backupPath, JSON.stringify(manager, null, 2), "utf8");
-      console.log(chalk.green(`✅ Backup saved to: ${backupPath}`));
-    }
+  const { confirmSave } = await inquirer.prompt([
+    {
+      type: "confirm",
+      name: "confirmSave",
+      message:
+        "💾 Do you want to save your current work before loading another manager?",
+      default: true,
+    },
+  ]);
+
+  if (confirmSave) {
+    const timestamp = format(new Date(), "yyyyMMdd_HHmmss");
+    const backupPath = `${dataDir}/backup_${timestamp}.json`;
+    fs.writeFileSync(backupPath, JSON.stringify(manager, null, 2), "utf8");
+    console.log(chalk.green(`✅ Backup saved to: ${backupPath}`));
   }
 
   const { selectedFile } = await inquirer.prompt([

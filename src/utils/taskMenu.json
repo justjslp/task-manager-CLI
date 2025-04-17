@@ -3,9 +3,9 @@
   { "name": "✏️ Update Task", "value": 2 },
   { "name": "🗑️ Delete Task", "value": 3 },
   { "name": "🔄 Reopen Completed Task", "value": 4 },
-  { "name": "📋 List All Tasks", "value": 5 },
+  { "name": "📑 List All Tasks", "value": 5 },
   { "name": "🔍 Filter Tasks", "value": 6 },
-  { "name": "📊 Sort Tasks", "value": 7 },
+  { "name": "📶 Sort Tasks", "value": 7 },
   { "name": "🔙 Go Back", "value": "back" },
   { "name": "🏠 Return to Main Menu", "value": "menu" }
 ]

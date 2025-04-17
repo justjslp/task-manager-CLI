@@ -21,7 +21,8 @@ export class Task {
     dueDate,
     priority = 6,
     completed = false,
-    createdAt = Date.now(),
+    completedAt = null,
+    createdAt = new Date(Date.now()),
     updatedAt = null
   ) {
     /**
@@ -64,6 +65,8 @@ export class Task {
      */
     this.completed = completed;
 
+    this.completedAt = completedAt;
+
     /**
      * The timestamp representing when the task was created.
      * @type {Date}
@@ -75,8 +78,14 @@ export class Task {
 
   updatedTaskFields(field, updatedField) {
     if (this.hasOwnProperty(field)) {
+      if (field === "priority") {
+        const foundPriority = priorityLevels.find(
+          (priority) => priority.value === updatedField
+        );
+      }
+
       this[field] = updatedField;
-      this.updatedAt = Date.now();
+      this.updatedAt = new Date(Date.now());
       console.log(
         "✅ Field " +
           chalk.rgb(150, 124, 46).bold(field) +
@@ -105,9 +114,8 @@ export class Task {
   }
 
   deleteTaskSelf(selectedTaskList) {
-    selectedTaskList.tasks = selectedTaskList.tasks.filter(
-      (task) => task.id !== this.id
-    );
+    selectedTaskList.nonCompletedTasks =
+      selectedTaskList.nonCompletedTasks.filter((task) => task.id !== this.id);
     console.log(
       "✅ Task " +
         chalk.gray.bold(this.title) +
