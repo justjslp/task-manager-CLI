@@ -22,7 +22,7 @@ export class Task {
     priority = 6,
     completed = false,
     completedAt = null,
-    createdAt = new Date(Date.now()),
+    createdAt = Date.now(),
     updatedAt = null
   ) {
     /**
@@ -85,7 +85,7 @@ export class Task {
       }
 
       this[field] = updatedField;
-      this.updatedAt = new Date(Date.now());
+      this.updatedAt = Date.now();
       console.log(
         "✅ Field " +
           chalk.rgb(150, 124, 46).bold(field) +

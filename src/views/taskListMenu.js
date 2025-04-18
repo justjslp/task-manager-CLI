@@ -54,7 +54,7 @@ export async function showTaskListMenu(manager) {
     case 6:
       await loadTaskListsFromFile(manager);
       break;
-    case 0:
+    case "menu":
       await mainMenu(manager);
       break;
     default:

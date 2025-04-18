@@ -27,7 +27,7 @@ export class TaskList {
     description,
     isDefault = false,
     isArchived = false,
-    createdAt = new Date(Date.now()),
+    createdAt = Date.now(),
     updatedAt = null,
     nonCompletedTasks = [],
     completedTasks = []
@@ -108,7 +108,7 @@ export class TaskList {
   updateTaskListFields(field, updatedField) {
     if (this.hasOwnProperty(field)) {
       this[field] = updatedField;
-      this.updatedAt = new Date(Date.now());
+      this.updatedAt = Date.now();
       console.log(
         "✅ Field " +
           chalk.rgb(150, 124, 46).bold(field) +
@@ -151,7 +151,7 @@ export class TaskList {
       const foundPriority = priorityLevels.find(
         (priority) => priority.value === task.priority
       );
-      const now = new Date(Date.now());
+      const now = Date.now();
       const id = task.id;
       const title = task.title;
       const dueDate =
@@ -190,7 +190,7 @@ export class TaskList {
       );
       console.log(foundPriority);
       const id = task.id;
-      const now = new Date(Date.now());
+      const now = Date.now();
       const title = task.title;
       const dueDate =
         task.dueDate < now.getTime()

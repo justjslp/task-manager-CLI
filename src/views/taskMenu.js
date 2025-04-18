@@ -56,7 +56,7 @@ export async function selectedTaskMenu(manager, selectedTaskList) {
       await sortTasks(manager, selectedTaskList);
       break;
     case "back":
-      await showTaskManagerMenu(manager);
+      await showTaskMenu(manager);
       break;
     case "menu":
       await mainMenu(manager);

@@ -26,8 +26,8 @@ export class TaskListManager {
   constructor(
     id = crypto.randomUUID(),
     taskLists = [],
-    archivedTaskList = [],
-    createdAt = new Date(Date.now())
+    archivedTaskLists = [],
+    createdAt = Date.now()
   ) {
     /**
      * A unique identifier for the TaskListManager.
@@ -41,7 +41,7 @@ export class TaskListManager {
      */
     this.taskLists = taskLists;
 
-    this.archivedTaskList = archivedTaskList;
+    this.archivedTaskLists = archivedTaskLists;
 
     this.createdAt = createdAt;
   }

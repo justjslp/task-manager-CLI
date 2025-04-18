@@ -3,6 +3,7 @@ import { showTaskListMenu } from "./taskListMenu.js";
 import { showTaskMenu } from "./taskMenu.js";
 import { openGithubProfile } from "./openGithubProfile.js";
 import { menuOptions } from "../utils/JSONLoader.js";
+import { defaultTaskList } from "../utils/defaultTaskList.js";
 import chalk from "chalk";
 
 /**
@@ -20,7 +21,7 @@ Object.freeze(menuOptions);
 export async function mainMenu(manager) {
   try {
     while (true) {
-      const {selectedOption} = await inquirer.prompt([
+      const { selectedOption } = await inquirer.prompt([
         {
           type: "list",
           name: "selectedOption",
@@ -60,6 +61,9 @@ async function handleMenuSelection(manager, selectedOption) {
       await openGithubProfile();
       break;
     case 4:
+      await defaultTaskList(manager);
+      break;
+    case 5:
       await options(manager);
       break;
     case 0:

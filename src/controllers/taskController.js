@@ -33,11 +33,11 @@ export async function addTask(manager, selectedTaskList) {
         name: "dueDate",
         message: "Enter the due date for the task (YYYY-MM-DD)",
         validate: async (input) => {
-          const dueDate = parse(input, "yyyy-MM-dd", new Date());
+          const dueDate = parse(input, "yyyy-MM-dd", Date.now());
           if (isNaN(dueDate)) {
             return "Please enter a valid date in the format YYYY-MM-DD";
           }
-          if (dueDate < new Date(Date.now())) {
+          if (dueDate < Date.now()) {
             return "Please enter a date that is after the current date.";
           }
           return true;
@@ -161,7 +161,7 @@ async function updateTaskField(manager, selectedTaskList, selectedTask) {
             if (isNaN(dueDate)) {
               return "Please enter a valid date in the format YYYY-MM-DD";
             }
-            if (dueDate < new Date(Date.now())) {
+            if (dueDate < Date.now()) {
               return "Please enter a date that is after the current date.";
             }
             return true;
@@ -226,7 +226,7 @@ async function updateTaskField(manager, selectedTaskList, selectedTask) {
         selectedTaskList.completedTasks.push(selectedTask);
         selectedTask.deleteTaskSelf(selectedTaskList);
       } else selectedTask.updatedTaskFields("completed", false);
-      selectedTask.completedAt = new Date(Date.now());
+      selectedTask.completedAt = Date.now();
       await selectedTaskMenu(manager, selectedTaskList);
       break;
     case "back":
@@ -303,8 +303,14 @@ export async function displayTasks(manager, selectedTaskList) {
       );
       await selectedTaskMenu(manager, selectedTaskList);
     } else selectedTaskList.getCompletedTasks();
-  } else if (displayFilter === 2) selectedTaskList.getNonCompletedTasks();
-  else selectedTaskList.getAllTasksLists();
+  } else if (displayFilter === 2) {
+    if (selectedTaskList.nonCompletedTasks.length === 0) {
+      console.warn(
+        chalk.redBright("⚠️ You haven't completed tasks available to display.")
+      );
+      await selectedTaskMenu(manager, selectedTaskList);
+    } else selectedTaskList.getNonCompletedTasks();
+  } else selectedTaskList.getAllTasksLists();
 
   await selectedTaskMenu(manager, selectedTaskList);
 }

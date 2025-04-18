@@ -6,6 +6,6 @@
   { "name": "📑 List All Tasks", "value": 5 },
   { "name": "🔍 Filter Tasks", "value": 6 },
   { "name": "📶 Sort Tasks", "value": 7 },
-  { "name": "🔙 Go Back", "value": "back" },
+  { "name": "🔙 Go Back to the Task Lists", "value": "back" },
   { "name": "🏠 Return to Main Menu", "value": "menu" }
 ]

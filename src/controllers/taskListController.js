@@ -132,8 +132,10 @@ async function updateTaskListField(manager, selectedTaskList) {
           ],
         },
       ]);
-      if (toggleDefault === 1)
+      if (toggleDefault === 1){
         selectedTaskList.updateTaskListFields("isDefault", true);
+        
+      }
       else selectedTaskList.updateTaskListFields("isDefault", false);
       await updateTaskListField(manager, selectedTaskList);
       break;
@@ -150,10 +152,12 @@ async function updateTaskListField(manager, selectedTaskList) {
           ],
         },
       ]);
-      if (toggleArchived === 1)
+      if (toggleArchived === 1) {
         selectedTaskList.updateTaskListFields("isArchived", true);
-      else selectedTaskList.updateTaskListFields("isArchived", false);
-      await updateTaskListField(manager, selectedTaskList);
+        manager.archivedTaskLists.push(selectedTaskList);
+        selectedTaskList.deleteTaskListSelf(manager);
+      } else selectedTaskList.updateTaskListFields("isArchived", false);
+      await showTaskListMenu(manager);
       break;
     case "back":
       await updateTaskList(manager);
@@ -201,13 +205,38 @@ export async function deleteTaskList(manager) {
 }
 
 export async function displayTasksLists(manager) {
-  if (manager.taskLists.length === 0) {
+  if (
+    manager.taskLists.length === 0 &&
+    manager.archivedTaskLists.length === 0
+  ) {
     console.warn(
       chalk.redBright("⚠️ You haven't task lists available to display.")
     );
     await showTaskListMenu(manager);
   }
-  manager.getAllTasksLists();
+
+  const { displayFilter } = await inquirer.prompt([
+    {
+      type: "list",
+      name: "displayFilter",
+      message: "📝 Which task lists would you like to see?",
+      choices: [
+        { name: "🗒️ Task Lists", value: 1 },
+        { name: "🗄️ Archived Task Lists", value: 2 },
+        { name: "📋 All Task Lists", value: 3 },
+      ],
+    },
+  ]);
+
+  if (displayFilter === 1) {
+    if (manager.taskLists.length === 0) {
+      console.log("foo");
+    } else {
+      console.log("foo");
+    }
+  } else if (displayFilter === 2) {
+    console.log("foo");
+  } else manager.getAllTasksLists();
   await showTaskListMenu(manager);
 }
 
@@ -291,7 +320,7 @@ export async function loadTaskListsFromFile(manager) {
   ]);
 
   if (confirmSave) {
-    const timestamp = format(new Date(), "yyyyMMdd_HHmmss");
+    const timestamp = format(Date.now(), "yyyyMMdd_HHmmss");
     const backupPath = `${dataDir}/backup_${timestamp}.json`;
     fs.writeFileSync(backupPath, JSON.stringify(manager, null, 2), "utf8");
     console.log(chalk.green(`✅ Backup saved to: ${backupPath}`));

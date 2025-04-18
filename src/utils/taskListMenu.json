@@ -5,5 +5,5 @@
   { "name": "📋 View Task Lists", "value": 4 },
   { "name": "💾 Save the Manager to File", "value": 5 },
   { "name": "📂 Load the Manager from File", "value": 6 },
-  { "name": "🔙 Go Back", "value": 0 }
+  { "name": "🏠 Return to Main Menu", "value": "menu" }
 ]
