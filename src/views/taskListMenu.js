@@ -12,11 +12,6 @@ import { mainMenu } from "./menu.js";
 import chalk from "chalk";
 
 /**
- * Freeze JSON configuration objects to prevent accidental modification.
- */
-Object.freeze(taskListMenu);
-
-/**
  * Displays the Task List Manager menu and handles the selected action.
  *
  * @async

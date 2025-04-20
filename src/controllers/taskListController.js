@@ -4,13 +4,10 @@ import fs from "fs";
 import inquirer from "inquirer";
 import { mainMenu } from "../views/menu.js";
 import { showTaskListMenu } from "../views/taskListMenu.js";
+import { Task } from "../models/Task.js";
 import { TaskList } from "../models/TaskList.js";
 import { updateTaskListOptions } from "../utils/JSONLoader.js";
-
-/**
- * Freeze JSON configuration objects to prevent accidental modification.
- */
-Object.freeze(updateTaskListOptions);
+import { findDefaultTaskList } from "../utils/defaultTaskList.js";
 
 /**
  * Prompts the user to create a new Task List.
@@ -23,10 +20,10 @@ Object.freeze(updateTaskListOptions);
  * await createTaskList(manager);
  */
 export async function createTaskList(manager) {
-  const { taskListName, taskListDescription } = await inquirer.prompt([
+  const { name, description } = await inquirer.prompt([
     {
       type: "input",
-      name: "taskListName",
+      name: "name",
       message: "📝 Enter a name for your new Task List (max 50 characters)",
       validate: (input) =>
         input.length > 0 && input.length <= 50
@@ -35,7 +32,7 @@ export async function createTaskList(manager) {
     },
     {
       type: "input",
-      name: "taskListDescription",
+      name: "description",
       message:
         "📝 Enter a description for your new Task List (max 100 characters)",
       validate: (input) =>
@@ -44,10 +41,11 @@ export async function createTaskList(manager) {
           : "⚠️ Task List description must be between 1 and 100 characters.",
     },
   ]);
-  const newTaskList = new TaskList(
-    taskListName.trim(),
-    taskListDescription.trim()
-  );
+  const newTaskList = new TaskList({
+    name: name.trim(),
+    description: description.trim(),
+  });
+
   manager.addTaskList(newTaskList);
   await showTaskListMenu(manager);
 }
@@ -132,11 +130,16 @@ async function updateTaskListField(manager, selectedTaskList) {
           ],
         },
       ]);
-      if (toggleDefault === 1){
+      if (toggleDefault === 1) {
+        const defaultTaskList = await findDefaultTaskList(manager);
+        if (defaultTaskList) {
+          console.warn(
+            chalk.redBright("⚠️ You already have a default task list.")
+          );
+          await updateTaskListField(manager, selectedTaskList);
+        }
         selectedTaskList.updateTaskListFields("isDefault", true);
-        
-      }
-      else selectedTaskList.updateTaskListFields("isDefault", false);
+      } else selectedTaskList.updateTaskListFields("isDefault", false);
       await updateTaskListField(manager, selectedTaskList);
       break;
     case 4:
@@ -353,8 +356,27 @@ export async function loadTaskListsFromFile(manager) {
   try {
     const fileContent = fs.readFileSync(path, "utf8");
     const parsedManager = JSON.parse(fileContent);
-    console.log(manager, parsedManager);
-    Object.assign(manager, parsedManager);
+    const { taskLists: rawLists, id } = parsedManager;
+    manager.taskLists.length = 0;
+
+    manager.id = id;
+
+    // rebuild each TaskList
+    for (const raw of rawLists) {
+      const list = new TaskList({
+        id: raw.id,
+        name: raw.name,
+        description: raw.description,
+        isDefault: raw.isDefault,
+        isArchived: raw.isArchived,
+        tasks: raw.tasks,
+        nonCompletedTasks: raw.nonCompletedTasks,
+        completedTasks: raw.completedTasks,
+        createdAt: raw.createdAt,
+        updatedAt: raw.updatedAt
+      });
+      manager.taskLists.push(list);
+    }
 
     console.log(
       chalk.greenBright("✅ Task Lists loaded successfully from ") +

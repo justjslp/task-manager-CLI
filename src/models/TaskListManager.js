@@ -72,7 +72,9 @@ export class TaskListManager {
   getAllTasksLists() {
     console.log(chalk.bold.blue("📋 Available Task Lists:"));
     this.taskLists.forEach((list, index) => {
-      const tasksQuantity = list.nonCompletedTasks.length;
+      const tasks = list.tasks.length;
+      const uncompletedTasks = list.nonCompletedTasks.length;
+      const completedTasks = list.completedTasks.length;
       const id = list.id;
       const name = list.name;
       const isDefault = list.isDefault
@@ -92,7 +94,9 @@ export class TaskListManager {
         chalk.cyan(index + 1 + ". ") +
           chalk.bold.green(`${name} `) +
           chalk.gray(`(ID: ${id.slice(0, 8)}...) `) +
-          chalk.cyanBright(`${tasksQuantity} tasks. `) +
+          chalk.rgb(167, 167, 169).bold(`${tasks} tasks. `) +
+          chalk.redBright.bold(`${uncompletedTasks} Uncompleted. `) +
+          chalk.greenBright.bold(`${completedTasks} Completed. `) +
           chalk.whiteBright(`Created at: ${createdAt} `) +
           chalk.whiteBright(`Updated at: ${updatedAt} `) +
           chalk(`${isDefault} `) +

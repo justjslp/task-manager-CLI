@@ -15,7 +15,8 @@ import { priorityLevels } from "../utils/JSONLoader.js";
  * console.log(task.description); // "Finish the report"
  */
 export class Task {
-  constructor(
+  constructor({
+    id = crypto.randomUUID(),
     title,
     description,
     dueDate,
@@ -23,13 +24,13 @@ export class Task {
     completed = false,
     completedAt = null,
     createdAt = Date.now(),
-    updatedAt = null
-  ) {
+    updatedAt = null,
+  }) {
     /**
      * A unique identifier for the Task.
      * @type {string}
      */
-    this.id = crypto.randomUUID();
+    this.id = id;
 
     // Future implementation category for choose a category inside a Task List
     // this.category = [];

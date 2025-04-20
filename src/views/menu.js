@@ -4,12 +4,8 @@ import { showTaskMenu } from "./taskMenu.js";
 import { openGithubProfile } from "./openGithubProfile.js";
 import { menuOptions } from "../utils/JSONLoader.js";
 import { defaultTaskList } from "../utils/defaultTaskList.js";
+import { findDefaultTaskList } from "../utils/defaultTaskList.js";
 import chalk from "chalk";
-
-/**
- * Freeze JSON configuration objects to prevent accidental modification.
- */
-Object.freeze(menuOptions);
 
 /**
  * An array of main menu options for the CLI.
@@ -19,6 +15,18 @@ Object.freeze(menuOptions);
  */
 
 export async function mainMenu(manager) {
+
+  const choices = [...menuOptions];
+
+  const defaultTaskList = await findDefaultTaskList(manager);
+
+  if (defaultTaskList !== undefined) {
+    const defaultName = defaultTaskList.name;
+    choices.splice(3, 0, {
+      name: `🔧 ${defaultName}`,
+      value: 4,
+    });
+  }
   try {
     while (true) {
       const { selectedOption } = await inquirer.prompt([
@@ -26,7 +34,7 @@ export async function mainMenu(manager) {
           type: "list",
           name: "selectedOption",
           message: "Select an option:",
-          choices: menuOptions,
+          choices,
         },
       ]);
 

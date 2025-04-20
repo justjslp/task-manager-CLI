@@ -76,14 +76,14 @@ export async function addTask(manager, selectedTaskList) {
     second
   ).getTime();
 
-  const newTask = new Task(
-    title.trim(),
-    description.trim(),
+  const newTask = new Task({
+    title: title.trim(),
+    description: description.trim(),
     combinedDate,
     priority
-  );
+  });
+
   selectedTaskList.addTask(newTask);
-  selectedTaskList.logTaskListState();
   await selectedTaskMenu(manager, selectedTaskList);
 }
 
@@ -310,7 +310,7 @@ export async function displayTasks(manager, selectedTaskList) {
       );
       await selectedTaskMenu(manager, selectedTaskList);
     } else selectedTaskList.getNonCompletedTasks();
-  } else selectedTaskList.getAllTasksLists();
+  } else selectedTaskList.getAllTasks();
 
   await selectedTaskMenu(manager, selectedTaskList);
 }

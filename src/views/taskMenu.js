@@ -12,8 +12,6 @@ import {
 } from "../controllers/taskController.js";
 import chalk from "chalk";
 
-Object.freeze(taskMenu);
-
 /**
  * Displays the Task Manager menu and handles the selected action.
  *
