@@ -115,8 +115,13 @@ export class Task {
   }
 
   deleteTaskSelf(selectedTaskList) {
+    console.log("Entrando")
     selectedTaskList.nonCompletedTasks =
       selectedTaskList.nonCompletedTasks.filter((task) => task.id !== this.id);
+
+    selectedTaskList.tasks = selectedTaskList.tasks.filter(
+      (task) => task.id !== this.id
+    );
     console.log(
       "✅ Task " +
         chalk.gray.bold(this.title) +

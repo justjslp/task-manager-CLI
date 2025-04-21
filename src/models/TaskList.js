@@ -165,7 +165,7 @@ export class TaskList {
           : chalk.blackBright(`📅 ${formatLocalDate(task.dueDate)}`);
       const priority = chalk.yellow(foundPriority.name);
       const completedAt = task.completedAt
-        ? chalk.blackBright(`📅 ${formatLocalDate(task.completedAt)}`)
+        ? chalk.green(`📅 ${formatLocalDate(task.completedAt)}`)
         : chalk.blackBright("Not completed so far.");
       const createdAt = task.createdAt
         ? chalk.blackBright(`📅 ${formatLocalDate(task.createdAt)}`)
@@ -225,8 +225,9 @@ export class TaskList {
   }
 
   getAllTasks() {
+    console.log(this);
     console.log(chalk.bold.blue("📋 All Tasks:"));
-    this.completedTasks.forEach((task, index) => {
+    this.tasks.forEach((task, index) => {
       const foundPriority = priorityLevels.find(
         (priority) => priority.value === task.priority
       );
@@ -239,40 +240,7 @@ export class TaskList {
           : chalk.blackBright(`📅 ${formatLocalDate(task.dueDate)}`);
       const priority = chalk.yellow(foundPriority.name);
       const completedAt = task.completedAt
-        ? chalk.blackBright(`📅 ${formatLocalDate(task.completedAt)}`)
-        : chalk.blackBright("Not completed so far.");
-      const createdAt = task.createdAt
-        ? chalk.blackBright(`📅 ${formatLocalDate(task.createdAt)}`)
-        : "";
-      const updatedAt = task.updatedAt
-        ? chalk.blackBright(`📝 ${formatLocalDate(task.updatedAt)}`)
-        : chalk.blackBright("Not updated so far.");
-
-      console.log(
-        chalk.cyan(index + 1 + ". ") +
-          chalk.bold.green(`${title} `) +
-          chalk.gray(`(ID: ${id.slice(0, 8)}...) `) +
-          chalk.whiteBright(`Due date: ${dueDate} `) +
-          chalk.whiteBright(`Priority: ${priority}. `) +
-          chalk.whiteBright(`Completed at: ${completedAt} `) +
-          chalk.whiteBright(`Created at: ${createdAt} `) +
-          chalk.whiteBright(`Updated at: ${updatedAt} `)
-      );
-    });
-    this.nonCompletedTasks.forEach((task, index) => {
-      const foundPriority = priorityLevels.find(
-        (priority) => priority.value === task.priority
-      );
-      const id = task.id;
-      const now = Date.now();
-      const title = task.title;
-      const dueDate =
-        new Date(task.dueDate) < new Date(now).getTime()
-          ? chalk.redBright(`📅 ${formatLocalDate(task.dueDate)}`)
-          : chalk.blackBright(`📅 ${formatLocalDate(task.dueDate)}`);
-      const priority = chalk.yellow(foundPriority.name);
-      const completedAt = task.completedAt
-        ? chalk.blackBright(`📅 ${formatLocalDate(task.completedAt)}`)
+        ? chalk.green(`📅 ${formatLocalDate(task.completedAt)}`)
         : chalk.blackBright("Not completed so far.");
       const createdAt = task.createdAt
         ? chalk.blackBright(`📅 ${formatLocalDate(task.createdAt)}`)

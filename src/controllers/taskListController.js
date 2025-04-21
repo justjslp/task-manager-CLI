@@ -2,10 +2,9 @@ import chalk from "chalk";
 import { format } from "date-fns";
 import fs from "fs";
 import inquirer from "inquirer";
-import { mainMenu } from "../views/menu.js";
 import { showTaskListMenu } from "../views/taskListMenu.js";
-import { Task } from "../models/Task.js";
 import { TaskList } from "../models/TaskList.js";
+import { Task } from "../models/Task.js";
 import { updateTaskListOptions } from "../utils/JSONLoader.js";
 import { findDefaultTaskList } from "../utils/defaultTaskList.js";
 
@@ -20,16 +19,25 @@ import { findDefaultTaskList } from "../utils/defaultTaskList.js";
  * await createTaskList(manager);
  */
 export async function createTaskList(manager) {
-  const { name, description } = await inquirer.prompt([
+  console.log(chalk.rgb(168, 155, 157)("Type 'cancel' to abort."));
+  const { name } = await inquirer.prompt([
     {
       type: "input",
       name: "name",
-      message: "📝 Enter a name for your new Task List (max 50 characters)",
+      message: "📝 Enter a name for your new Task List (max 50 characters).",
       validate: (input) =>
         input.length > 0 && input.length <= 50
           ? true
           : "⚠️ Task List name must be between 1 and 50 characters.",
     },
+  ]);
+
+  if (name.trim().toLowerCase() === "cancel") {
+    console.log(chalk.rgb(207, 207, 234)("Operation cancelled."));
+    await showTaskListMenu(manager);
+  }
+
+  const { description } = await inquirer.prompt([
     {
       type: "input",
       name: "description",
@@ -41,6 +49,12 @@ export async function createTaskList(manager) {
           : "⚠️ Task List description must be between 1 and 100 characters.",
     },
   ]);
+
+  if (description.trim().toLowerCase() === "cancel") {
+    console.log(chalk.rgb(207, 207, 234)("Operation cancelled."));
+    await showTaskListMenu(manager);
+  }
+
   const newTaskList = new TaskList({
     name: name.trim(),
     description: description.trim(),
@@ -298,7 +312,7 @@ export async function loadTaskListsFromFile(manager) {
 
   console.log(chalk.yellowBright("📋 Current manager summary:"));
   if (manager.taskLists.length === 0) {
-    console.log(chalk.gray("No task lists in memory."));
+    console.log(chalk.gray("💽 No task lists in memory."));
   } else {
     console.log(
       chalk.gray(`${manager.taskLists.length} task lists in memory:`)
@@ -370,20 +384,39 @@ export async function loadTaskListsFromFile(manager) {
         isDefault: raw.isDefault,
         isArchived: raw.isArchived,
         tasks: raw.tasks,
-        nonCompletedTasks: raw.nonCompletedTasks,
-        completedTasks: raw.completedTasks,
+        nonCompletedTasks: [],
+        completedTasks: [],
         createdAt: raw.createdAt,
-        updatedAt: raw.updatedAt
+        updatedAt: raw.updatedAt,
       });
+
+      // rebuild each Task inside
+      for (const t of raw.tasks || []) {
+        const task = new Task({
+          id: t.id,
+          title: t.title,
+          description: t.description,
+          dueDate: t.dueDate,
+          priority: t.priority,
+          completed: t.completed,
+          completedAt: t.completedAt,
+          createdAt: t.createdAt,
+          updatedAt: t.updatedAt,
+        });
+        // if it was already completed, push it to the right bucket
+        if (t.completed) list.completedTasks.push(task);
+        else list.nonCompletedTasks.push(task);
+      }
+
       manager.taskLists.push(list);
     }
 
     console.log(
-      chalk.greenBright("✅ Task Lists loaded successfully from ") +
+      chalk.whiteBright("✅ Task Lists loaded successfully from ") +
         chalk.blueBright(path)
     );
 
-    await mainMenu(manager);
+    await showTaskListMenu(manager);
   } catch (error) {
     console.error(chalk.red("❌ Failed to load Task Lists:"), error.message);
   }

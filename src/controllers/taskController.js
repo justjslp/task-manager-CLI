@@ -79,8 +79,8 @@ export async function addTask(manager, selectedTaskList) {
   const newTask = new Task({
     title: title.trim(),
     description: description.trim(),
-    combinedDate,
-    priority
+    dueDate: combinedDate,
+    priority,
   });
 
   selectedTaskList.addTask(newTask);
@@ -240,9 +240,7 @@ async function updateTaskField(manager, selectedTaskList, selectedTask) {
 
 export async function deleteTask(manager, selectedTaskList) {
   if (selectedTaskList.nonCompletedTasks.length === 0) {
-    console.warn(
-      chalk.redBright("⚠️ You haven't task lists available to delete.")
-    );
+    console.warn(chalk.redBright("⚠️ You haven't tasks available to delete."));
     await selectedTaskMenu(manager, selectedTaskList);
   }
 
@@ -268,6 +266,7 @@ export async function deleteTask(manager, selectedTaskList) {
       default: false,
     },
   ]);
+
   if (answer) selectedTask.deleteTaskSelf(selectedTaskList);
   await selectedTaskMenu(manager, selectedTaskList);
 }

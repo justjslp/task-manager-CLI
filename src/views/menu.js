@@ -15,7 +15,6 @@ import chalk from "chalk";
  */
 
 export async function mainMenu(manager) {
-
   const choices = [...menuOptions];
 
   const defaultTaskList = await findDefaultTaskList(manager);

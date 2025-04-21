@@ -94,7 +94,7 @@ export class TaskListManager {
         chalk.cyan(index + 1 + ". ") +
           chalk.bold.green(`${name} `) +
           chalk.gray(`(ID: ${id.slice(0, 8)}...) `) +
-          chalk.rgb(167, 167, 169).bold(`${tasks} tasks. `) +
+          chalk.rgb(194, 194, 197).bold(`${tasks} tasks. `) +
           chalk.redBright.bold(`${uncompletedTasks} Uncompleted. `) +
           chalk.greenBright.bold(`${completedTasks} Completed. `) +
           chalk.whiteBright(`Created at: ${createdAt} `) +
