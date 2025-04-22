@@ -7,61 +7,101 @@ import { selectedTaskMenu } from "../views/taskMenu.js";
 import { updateTaskOptions } from "../utils/JSONLoader.js";
 
 export async function addTask(manager, selectedTaskList) {
-  const { title, description, dueDate, dueTime, priority } =
-    await inquirer.prompt([
-      {
-        type: "input",
-        name: "title",
-        message: "📝 Enter a title for your new Task (max 50 characters)",
-        validate: (input) =>
-          input.length > 0 && input.length <= 50
-            ? true
-            : "⚠️  Task title must be between 1 and 50 characters.",
+  console.log(chalk.rgb(168, 155, 157)("Add Task. Type 'cancel' to abort."));
+
+  const { title } = await inquirer.prompt([
+    {
+      type: "input",
+      name: "title",
+      message: "📝 Enter a title for your new Task (max 50 characters)",
+      validate: (input) =>
+        input.length > 0 && input.length <= 50
+          ? true
+          : "⚠️  Task title must be between 1 and 50 characters.",
+    },
+  ]);
+
+  if (title.trim().toLowerCase() === "cancel") {
+    console.log(chalk.rgb(207, 207, 234)("Operation cancelled."));
+    await selectedTaskMenu(manager, selectedTaskList);
+  }
+
+  const { description } = await inquirer.prompt([
+    {
+      type: "input",
+      name: "description",
+      message:
+        "📝 Enter a description for your new Task List (max 300 characters)",
+      validate: (input) =>
+        input.length > 0 && input.length <= 300
+          ? true
+          : "⚠️  Task List description must be between 1 and 300 characters.",
+    },
+  ]);
+
+  if (description.trim().toLowerCase() === "cancel") {
+    console.log(chalk.rgb(207, 207, 234)("Operation cancelled."));
+    await selectedTaskMenu(manager, selectedTaskList);
+  }
+
+  const { dueDate } = await inquirer.prompt([
+    {
+      type: "input",
+      name: "dueDate",
+      message: "Enter the due date for the task (YYYY-MM-DD)",
+      validate: async (input) => {
+        const dueDate = parse(input, "yyyy-MM-dd", Date.now());
+        if (input.trim().toLowerCase() === "cancel") return true;
+        if (isNaN(dueDate)) {
+          return "Please enter a valid date in the format YYYY-MM-DD";
+        }
+        if (dueDate < Date.now()) {
+          return "Please enter a date that is after the current date.";
+        }
+        return true;
       },
-      {
-        type: "input",
-        name: "description",
-        message:
-          "📝 Enter a description for your new Task List (max 300 characters)",
-        validate: (input) =>
-          input.length > 0 && input.length <= 300
-            ? true
-            : "⚠️  Task List description must be between 1 and 300 characters.",
+    },
+  ]);
+
+  if (dueDate.trim().toLowerCase() === "cancel") {
+    console.log(chalk.rgb(207, 207, 234)("Operation cancelled."));
+    await selectedTaskMenu(manager, selectedTaskList);
+  }
+
+  const { dueTime } = await inquirer.prompt([
+    {
+      type: "input",
+      name: "dueTime",
+      message: "Enter the due time for your due date (hh:mm:ss)",
+      validate: async (input) => {
+        const timeRegex = /^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/;
+        if (input.trim().toLowerCase() === "cancel") return true;
+        if (!timeRegex.test(input)) {
+          return "Please enter a valid time in the format hh:mm:ss";
+        }
+        return true;
       },
-      {
-        type: "input",
-        name: "dueDate",
-        message: "Enter the due date for the task (YYYY-MM-DD)",
-        validate: async (input) => {
-          const dueDate = parse(input, "yyyy-MM-dd", Date.now());
-          if (isNaN(dueDate)) {
-            return "Please enter a valid date in the format YYYY-MM-DD";
-          }
-          if (dueDate < Date.now()) {
-            return "Please enter a date that is after the current date.";
-          }
-          return true;
-        },
-      },
-      {
-        type: "input",
-        name: "dueTime",
-        message: "Enter the due time for your due date (hh:mm:ss)",
-        validate: async (input) => {
-          const timeRegex = /^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/;
-          if (!timeRegex.test(input)) {
-            return "Please enter a valid time in the format hh:mm:ss";
-          }
-          return true;
-        },
-      },
-      {
-        type: "list",
-        name: "priority",
-        message: "Please select a priority for your task",
-        choices: priorityLevels,
-      },
-    ]);
+    },
+  ]);
+
+  if (dueTime.trim().toLowerCase() === "cancel") {
+    console.log(chalk.rgb(207, 207, 234)("Operation cancelled."));
+    await selectedTaskMenu(manager, selectedTaskList);
+  }
+
+  const { priority } = await inquirer.prompt([
+    {
+      type: "list",
+      name: "priority",
+      message: "Please select a priority for your task",
+      choices: priorityLevels,
+    },
+  ]);
+
+  if (priority === "cancel") {
+    console.log(chalk.rgb(207, 207, 234)("Operation cancelled."));
+    await selectedTaskMenu(manager, selectedTaskList);
+  }
 
   const [year, month, day] = dueDate.split("-").map(Number);
 
@@ -224,7 +264,10 @@ async function updateTaskField(manager, selectedTaskList, selectedTask) {
       if (toggleCompleted === 1) {
         selectedTask.updatedTaskFields("completed", true);
         selectedTaskList.completedTasks.push(selectedTask);
-        selectedTask.deleteTaskSelf(selectedTaskList);
+        selectedTaskList.nonCompletedTasks =
+          selectedTaskList.nonCompletedTasks.filter(
+            (task) => task !== selectedTask
+          );
       } else selectedTask.updatedTaskFields("completed", false);
       selectedTask.completedAt = Date.now();
       await selectedTaskMenu(manager, selectedTaskList);
@@ -271,7 +314,37 @@ export async function deleteTask(manager, selectedTaskList) {
   await selectedTaskMenu(manager, selectedTaskList);
 }
 
-export async function reopenCompletedTask(manager, selectedTaskList) {}
+export async function reopenCompletedTask(manager, selectedTaskList) {
+  if (selectedTaskList.completedTasks.length === 0) {
+    console.warn(
+      chalk.redBright("⚠️ You haven't completed tasks available to re open.")
+    );
+    await selectedTaskMenu(manager, selectedTaskList);
+  }
+
+  const { selectedTaskId } = await inquirer.prompt([
+    {
+      type: "list",
+      name: "selectedTaskId",
+      message: "🔄 Select a Task to reopen.",
+      choices: selectedTaskList.completedTasks.map((list) => ({
+        name: list.title,
+        value: list.id,
+      })),
+    },
+  ]);
+
+  const selectedTask = selectedTaskList.getTask(selectedTaskId);
+
+  selectedTask.updatedTaskFields("completed", false);
+  selectedTaskList.nonCompletedTasks.push(selectedTask);
+  selectedTaskList.completedTasks = selectedTaskList.completedTasks.filter(
+    (task) => task !== selectedTask
+  );
+  selectedTask.completedAt = null;
+
+  await selectedTaskMenu(manager, selectedTaskList);
+}
 
 export async function displayTasks(manager, selectedTaskList) {
   if (

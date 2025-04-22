@@ -4,5 +4,6 @@
   { "name": "⏱️ 5-Minute Tasks", "value": 3 },
   { "name": "🕛 Under 1 Hour Tasks", "value": 4 },
   { "name": "➖ Less Urgent Tasks", "value": 5 },
-  { "name": "😌 Non-Urgent Tasks", "value": 6 }
+  { "name": "😌 Non-Urgent Tasks", "value": 6 },
+  { "name": "❌ Cancel Operation", "value": "cancel" }
 ]

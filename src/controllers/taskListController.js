@@ -19,7 +19,10 @@ import { findDefaultTaskList } from "../utils/defaultTaskList.js";
  * await createTaskList(manager);
  */
 export async function createTaskList(manager) {
-  console.log(chalk.rgb(168, 155, 157)("Type 'cancel' to abort."));
+  console.log(
+    chalk.rgb(168, 155, 157)("Create a Task List. Type 'cancel' to abort.")
+  );
+
   const { name } = await inquirer.prompt([
     {
       type: "input",
@@ -265,6 +268,10 @@ export async function saveTaskListsToFile(manager) {
     await showTaskListMenu(manager);
   }
 
+  console.log(
+    chalk.rgb(168, 155, 157)("Save the manager. Type 'cancel' to abort.")
+  );
+
   const { managerName } = await inquirer.prompt([
     {
       type: "input",
@@ -276,6 +283,11 @@ export async function saveTaskListsToFile(manager) {
           : "⚠️ Manager filename must be between 1 and 50 characters.",
     },
   ]);
+
+  if (managerName.trim().toLowerCase() === "cancel") {
+    console.log(chalk.rgb(207, 207, 234)("Operation cancelled."));
+    await showTaskListMenu(manager);
+  }
 
   const path = `data/${managerName}.json`;
   const jsonManager = JSON.stringify(manager, null, 2);
@@ -362,7 +374,7 @@ export async function loadTaskListsFromFile(manager) {
   ]);
 
   if (!confirmLoad) {
-    console.log(chalk.blue("ℹ️ Load cancelled. Your data remains unchanged."));
+    console.log(chalk.red("ℹ️ Load cancelled. Your data remains unchanged."));
     await showTaskListMenu(manager);
   }
 
@@ -383,7 +395,7 @@ export async function loadTaskListsFromFile(manager) {
         description: raw.description,
         isDefault: raw.isDefault,
         isArchived: raw.isArchived,
-        tasks: raw.tasks,
+        tasks: [],
         nonCompletedTasks: [],
         completedTasks: [],
         createdAt: raw.createdAt,
@@ -404,8 +416,13 @@ export async function loadTaskListsFromFile(manager) {
           updatedAt: t.updatedAt,
         });
         // if it was already completed, push it to the right bucket
-        if (t.completed) list.completedTasks.push(task);
-        else list.nonCompletedTasks.push(task);
+        if (t.completed) {
+          list.tasks.push(task);
+          list.completedTasks.push(task);
+        } else {
+          list.tasks.push(task);
+          list.nonCompletedTasks.push(task);
+        }
       }
 
       manager.taskLists.push(list);
