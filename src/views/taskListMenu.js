@@ -4,12 +4,14 @@ import {
   createTaskList,
   updateTaskList,
   deleteTaskList,
+  unarchiveTaskList,
   displayTasksLists,
   saveTaskListsToFile,
   loadTaskListsFromFile,
 } from "../controllers/taskListController.js";
 import { mainMenu } from "./menu.js";
 import chalk from "chalk";
+import { printBanner } from "../index.js";
 
 /**
  * Displays the Task List Manager menu and handles the selected action.
@@ -22,6 +24,9 @@ import chalk from "chalk";
  * await showTaskListMenu(manager);
  */
 export async function showTaskListMenu(manager) {
+  console.clear();
+  await printBanner();
+
   const { action } = await inquirer.prompt([
     {
       type: "list",
@@ -41,12 +46,15 @@ export async function showTaskListMenu(manager) {
       await deleteTaskList(manager);
       break;
     case 4:
-      await displayTasksLists(manager);
+      await unarchiveTaskList(manager);
       break;
     case 5:
-      await saveTaskListsToFile(manager);
+      await displayTasksLists(manager);
       break;
     case 6:
+      await saveTaskListsToFile(manager);
+      break;
+    case 7:
       await loadTaskListsFromFile(manager);
       break;
     case "menu":

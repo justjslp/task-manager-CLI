@@ -6,6 +6,7 @@ import { menuOptions } from "../utils/JSONLoader.js";
 import { defaultTaskList } from "../utils/defaultTaskList.js";
 import { findDefaultTaskList } from "../utils/defaultTaskList.js";
 import chalk from "chalk";
+import { printBanner } from "../index.js";
 
 /**
  * An array of main menu options for the CLI.
@@ -28,6 +29,8 @@ export async function mainMenu(manager) {
   }
   try {
     while (true) {
+      console.clear();
+      await printBanner();
       const { selectedOption } = await inquirer.prompt([
         {
           type: "list",
@@ -69,9 +72,6 @@ async function handleMenuSelection(manager, selectedOption) {
       break;
     case 4:
       await defaultTaskList(manager);
-      break;
-    case 5:
-      await options(manager);
       break;
     case 0:
       console.log(chalk.greenBright("👋 Exiting..."));

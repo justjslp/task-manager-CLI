@@ -26,6 +26,7 @@ export class TaskListManager {
   constructor(
     id = crypto.randomUUID(),
     taskLists = [],
+    unarchivedTaskLists = [],
     archivedTaskLists = [],
     createdAt = Date.now()
   ) {
@@ -43,6 +44,8 @@ export class TaskListManager {
 
     this.archivedTaskLists = archivedTaskLists;
 
+    this.unarchivedTaskLists = unarchivedTaskLists;
+
     this.createdAt = createdAt;
   }
 
@@ -58,6 +61,7 @@ export class TaskListManager {
    */
   addTaskList(taskList) {
     this.taskLists.push(taskList);
+    this.unarchivedTaskLists.push(taskList);
     console.log(
       "✅ Task List " +
         chalk.bold.green(taskList.name) +
@@ -69,7 +73,79 @@ export class TaskListManager {
     return this.taskLists.find((taskList) => taskList.id === id);
   }
 
-  getAllTasksLists() {
+  getArchivedTaskLists() {
+    console.log(chalk.bold.blue("📋 Available Task Lists:"));
+    this.archivedTaskLists.forEach((list, index) => {
+      const tasks = list.tasks.length;
+      const uncompletedTasks = list.nonCompletedTasks.length;
+      const completedTasks = list.completedTasks.length;
+      const id = list.id;
+      const name = list.name;
+      const isDefault = list.isDefault
+        ? chalk.rgb(194, 191, 188).bold("🔧 Default")
+        : "";
+      const isArchived = list.isArchived
+        ? chalk.rgb(251, 200, 70).bold("🗃️ Archived")
+        : "";
+      const createdAt = list.createdAt
+        ? chalk.blackBright(`📅 ${formatLocalDate(list.createdAt)}`)
+        : "";
+      const updatedAt = list.updatedAt
+        ? chalk.blackBright(`📝 ${formatLocalDate(list.updatedAt)}`)
+        : chalk.blackBright("Not updated so far.");
+
+      console.log(
+        chalk.cyan(index + 1 + ". ") +
+          chalk.bold.green(`${name} `) +
+          chalk.gray(`(ID: ${id.slice(0, 8)}...) `) +
+          chalk.rgb(194, 194, 197).bold(`${tasks} tasks. `) +
+          chalk.redBright.bold(`${uncompletedTasks} Uncompleted. `) +
+          chalk.greenBright.bold(`${completedTasks} Completed. `) +
+          chalk.whiteBright(`Created at: ${createdAt} `) +
+          chalk.whiteBright(`Updated at: ${updatedAt} `) +
+          chalk(`${isDefault} `) +
+          chalk(`${isArchived}`)
+      );
+    });
+  }
+
+  getNonArchivedTaskLists() {
+    console.log(chalk.bold.blue("📋 Available Task Lists:"));
+    this.unarchivedTaskLists.forEach((list, index) => {
+      const tasks = list.tasks.length;
+      const uncompletedTasks = list.nonCompletedTasks.length;
+      const completedTasks = list.completedTasks.length;
+      const id = list.id;
+      const name = list.name;
+      const isDefault = list.isDefault
+        ? chalk.rgb(194, 191, 188).bold("🔧 Default")
+        : "";
+      const isArchived = list.isArchived
+        ? chalk.rgb(251, 200, 70).bold("🗃️ Archived")
+        : "";
+      const createdAt = list.createdAt
+        ? chalk.blackBright(`📅 ${formatLocalDate(list.createdAt)}`)
+        : "";
+      const updatedAt = list.updatedAt
+        ? chalk.blackBright(`📝 ${formatLocalDate(list.updatedAt)}`)
+        : chalk.blackBright("Not updated so far.");
+
+      console.log(
+        chalk.cyan(index + 1 + ". ") +
+          chalk.bold.green(`${name} `) +
+          chalk.gray(`(ID: ${id.slice(0, 8)}...) `) +
+          chalk.rgb(194, 194, 197).bold(`${tasks} tasks. `) +
+          chalk.redBright.bold(`${uncompletedTasks} Uncompleted. `) +
+          chalk.greenBright.bold(`${completedTasks} Completed. `) +
+          chalk.whiteBright(`Created at: ${createdAt} `) +
+          chalk.whiteBright(`Updated at: ${updatedAt} `) +
+          chalk(`${isDefault} `) +
+          chalk(`${isArchived}`)
+      );
+    });
+  }
+
+  getAllTaskLists() {
     console.log(chalk.bold.blue("📋 Available Task Lists:"));
     this.taskLists.forEach((list, index) => {
       const tasks = list.tasks.length;

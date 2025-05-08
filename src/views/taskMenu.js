@@ -11,6 +11,8 @@ import {
   sortTasks,
 } from "../controllers/taskController.js";
 import chalk from "chalk";
+import { pause } from "../utils/pause.js";
+import { printBanner } from "../index.js";
 
 /**
  * Displays the Task Manager menu and handles the selected action.
@@ -23,6 +25,9 @@ import chalk from "chalk";
  * await showTaskMenu(selectedTaskList);
  */
 export async function selectedTaskMenu(manager, selectedTaskList) {
+  console.clear();
+  await printBanner();
+
   const { action } = await inquirer.prompt([
     {
       type: "list",
@@ -71,6 +76,7 @@ export async function showTaskMenu(manager) {
         "⚠️  No Task Lists available. Please first create a task list or load tasks from file."
       )
     );
+    await pause();
     await mainMenu(manager);
   }
 
@@ -79,7 +85,7 @@ export async function showTaskMenu(manager) {
       type: "list",
       name: "selectedTaskId",
       message: "Select a Task List",
-      choices: manager.taskLists.map((list) => ({
+      choices: manager.unarchivedTaskLists.map((list) => ({
         name: list.name,
         value: list.id,
       })),

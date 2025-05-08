@@ -7,6 +7,8 @@ import { TaskList } from "../models/TaskList.js";
 import { Task } from "../models/Task.js";
 import { updateTaskListOptions } from "../utils/JSONLoader.js";
 import { findDefaultTaskList } from "../utils/defaultTaskList.js";
+import { pause } from "../utils/pause.js";
+import { printBanner } from "../index.js";
 
 /**
  * Prompts the user to create a new Task List.
@@ -37,6 +39,7 @@ export async function createTaskList(manager) {
 
   if (name.trim().toLowerCase() === "cancel") {
     console.log(chalk.rgb(207, 207, 234)("Operation cancelled."));
+    await pause();
     await showTaskListMenu(manager);
   }
 
@@ -55,6 +58,7 @@ export async function createTaskList(manager) {
 
   if (description.trim().toLowerCase() === "cancel") {
     console.log(chalk.rgb(207, 207, 234)("Operation cancelled."));
+    await pause();
     await showTaskListMenu(manager);
   }
 
@@ -64,14 +68,16 @@ export async function createTaskList(manager) {
   });
 
   manager.addTaskList(newTaskList);
+  await pause();
   await showTaskListMenu(manager);
 }
 
 export async function updateTaskList(manager) {
-  if (manager.taskLists.length === 0) {
+  if (manager.unarchivedTaskLists.length === 0) {
     console.warn(
       chalk.redBright("⚠️ You haven't task lists available to update.")
     );
+    await pause();
     await showTaskListMenu(manager);
   }
 
@@ -80,7 +86,7 @@ export async function updateTaskList(manager) {
       type: "list",
       name: "selectedTaskId",
       message: "🔄 Select a Task List to update",
-      choices: manager.taskLists.map((list) => ({
+      choices: manager.unarchivedTaskLists.map((list) => ({
         name: list.name,
         value: list.id,
       })),
@@ -91,6 +97,8 @@ export async function updateTaskList(manager) {
   await updateTaskListField(manager, selectedTaskList);
 }
 async function updateTaskListField(manager, selectedTaskList) {
+  console.clear();
+  await printBanner();
   const { updateTaskListAction } = await inquirer.prompt([
     {
       type: "list",
@@ -114,6 +122,7 @@ async function updateTaskListField(manager, selectedTaskList) {
         },
       ]);
       selectedTaskList.updateTaskListFields("name", updatedName.trim());
+      await pause();
       await updateTaskListField(manager, selectedTaskList);
       break;
     case 2:
@@ -132,6 +141,7 @@ async function updateTaskListField(manager, selectedTaskList) {
         "description",
         updatedDescription.trim()
       );
+      await pause();
       await updateTaskListField(manager, selectedTaskList);
       break;
     case 3:
@@ -153,31 +163,54 @@ async function updateTaskListField(manager, selectedTaskList) {
           console.warn(
             chalk.redBright("⚠️ You already have a default task list.")
           );
+          await pause();
           await updateTaskListField(manager, selectedTaskList);
         }
         selectedTaskList.updateTaskListFields("isDefault", true);
       } else selectedTaskList.updateTaskListFields("isDefault", false);
+      await pause();
       await updateTaskListField(manager, selectedTaskList);
       break;
     case 4:
-      const { toggleArchived } = await inquirer.prompt([
+      if (selectedTaskList.isDefault) {
+        const { confirmedArchived } = await inquirer.prompt([
+          {
+            type: "confirm",
+            name: "confirmedArchived",
+            message:
+              "⚠️ This current Task List is marked as default. If you continue the state of default of the task list will be restored.",
+          },
+        ]);
+
+        if (confirmedArchived) {
+          selectedTaskList.updateTaskListFields("isDefault", false);
+          selectedTaskList.updateTaskListFields("isArchived", true);
+          manager.archivedTaskLists.push(selectedTaskList);
+          manager.unarchivedTaskLists = manager.unarchivedTaskLists.filter(
+            (taskList) => taskList !== selectedTaskList
+          );
+          await pause();
+          await showTaskListMenu(manager);
+        } else await showTaskListMenu(manager);
+      }
+
+      const { markAsArchived } = await inquirer.prompt([
         {
-          type: "list",
-          name: "toggleArchived",
-          message:
-            "🕹️ Would you like to toggle the archived status for this Task List?",
-          choices: [
-            { name: "🗂️ Mark as Archived", value: 1 },
-            { name: "📁 Mark as Not Archived", value: 2 },
-          ],
+          type: "confirm",
+          name: "markAsArchived",
+          message: "🗃️ Would you like to mark the Task List as Completed?",
         },
       ]);
-      if (toggleArchived === 1) {
+      if (markAsArchived) {
         selectedTaskList.updateTaskListFields("isArchived", true);
         manager.archivedTaskLists.push(selectedTaskList);
-        selectedTaskList.deleteTaskListSelf(manager);
-      } else selectedTaskList.updateTaskListFields("isArchived", false);
-      await showTaskListMenu(manager);
+        manager.unarchivedTaskLists = manager.unarchivedTaskLists.filter(
+          (taskList) => taskList !== selectedTaskList
+        );
+        await pause();
+        await showTaskListMenu(manager);
+      } else await showTaskListMenu(manager);
+
       break;
     case "back":
       await updateTaskList(manager);
@@ -195,6 +228,7 @@ export async function deleteTaskList(manager) {
     console.warn(
       chalk.redBright("⚠️ You haven't task lists available to delete.")
     );
+    await pause();
     await showTaskListMenu(manager);
   }
 
@@ -221,17 +255,54 @@ export async function deleteTaskList(manager) {
     },
   ]);
   if (answer) selectedTaskList.deleteTaskListSelf(manager);
+  await pause();
+  await showTaskListMenu(manager);
+}
+
+export async function unarchiveTaskList(manager) {
+  if (manager.archivedTaskLists.length === 0) {
+    console.warn(
+      chalk.redBright(
+        "⚠️ You haven't archived task lists available to display."
+      )
+    );
+    await pause();
+    await showTaskListMenu(manager);
+  }
+
+  const { archivedTaskListId } = await inquirer.prompt([
+    {
+      type: "list",
+      name: "archivedTaskListId",
+      message: "🗂️ Select a Task List archived to unarchive",
+      choices: manager.archivedTaskLists.map((list) => ({
+        name: list.name,
+        value: list.id,
+      })),
+    },
+  ]);
+
+  const selectedTaskList = manager.getTaskList(archivedTaskListId);
+  selectedTaskList.updateTaskListFields("isArchived", false);
+  manager.unarchivedTaskLists.push(selectedTaskList);
+  manager.archivedTaskLists = manager.archivedTaskLists.filter(
+    (taskList) => taskList !== selectedTaskList
+  );
+  await pause();
   await showTaskListMenu(manager);
 }
 
 export async function displayTasksLists(manager) {
+  console.clear();
+  await printBanner();
   if (
-    manager.taskLists.length === 0 &&
+    manager.unarchivedTaskLists.length === 0 &&
     manager.archivedTaskLists.length === 0
   ) {
     console.warn(
       chalk.redBright("⚠️ You haven't task lists available to display.")
     );
+    await pause();
     await showTaskListMenu(manager);
   }
 
@@ -241,23 +312,55 @@ export async function displayTasksLists(manager) {
       name: "displayFilter",
       message: "📝 Which task lists would you like to see?",
       choices: [
-        { name: "🗒️ Task Lists", value: 1 },
-        { name: "🗄️ Archived Task Lists", value: 2 },
-        { name: "📋 All Task Lists", value: 3 },
+        { name: "🗃️ Archived Task Lists", value: 1 },
+        { name: "🗂️ Non Archived Task Lists", value: 2 },
+        { name: "📖 All Task Lists", value: 3 },
+        { name: "🔙 Go Back", value: "back" },
       ],
     },
   ]);
 
-  if (displayFilter === 1) {
-    if (manager.taskLists.length === 0) {
-      console.log("foo");
-    } else {
-      console.log("foo");
-    }
-  } else if (displayFilter === 2) {
-    console.log("foo");
-  } else manager.getAllTasksLists();
-  await showTaskListMenu(manager);
+  switch (displayFilter) {
+    case 1:
+      if (manager.archivedTaskLists.length === 0) {
+        console.warn(
+          chalk.redBright(
+            "⚠️ You haven't archived task lists available to display."
+          )
+        );
+      } else {
+        manager.getArchivedTaskLists();
+      }
+      break;
+
+    case 2:
+      if (manager.unarchivedTaskLists.length === 0) {
+        console.warn(
+          chalk.redBright(
+            "⚠️ You haven't non-archived task lists available to display."
+          )
+        );
+      } else {
+        manager.getNonArchivedTaskLists();
+      }
+      break;
+
+    case 3:
+      manager.getAllTaskLists();
+      break;
+
+    case "back":
+      await showTaskListMenu(manager);
+      break;
+
+    default:
+      console.warn(chalk.redBright("❌ Invalid option."));
+      break;
+  }
+  await pause();
+  console.clear();
+  await printBanner();
+  await displayTasksLists(manager);
 }
 
 export async function saveTaskListsToFile(manager) {
@@ -265,6 +368,7 @@ export async function saveTaskListsToFile(manager) {
     console.warn(
       chalk.redBright("⚠️ You don't have any task lists available to save.")
     );
+    await pause();
     await showTaskListMenu(manager);
   }
 
@@ -286,6 +390,7 @@ export async function saveTaskListsToFile(manager) {
 
   if (managerName.trim().toLowerCase() === "cancel") {
     console.log(chalk.rgb(207, 207, 234)("Operation cancelled."));
+    await pause();
     await showTaskListMenu(manager);
   }
 
@@ -304,6 +409,8 @@ export async function saveTaskListsToFile(manager) {
       chalk.blueBright(path) +
       chalk(" Successfully")
   );
+  await pause();
+  await showTaskListMenu(manager);
 }
 
 export async function loadTaskListsFromFile(manager) {
@@ -319,6 +426,7 @@ export async function loadTaskListsFromFile(manager) {
         "⚠️ No saved Task List Manager were found in the 'data' directory."
       )
     );
+    await pause();
     await showTaskListMenu(manager);
   }
 
@@ -375,6 +483,7 @@ export async function loadTaskListsFromFile(manager) {
 
   if (!confirmLoad) {
     console.log(chalk.red("ℹ️ Load cancelled. Your data remains unchanged."));
+    await pause();
     await showTaskListMenu(manager);
   }
 
@@ -425,6 +534,8 @@ export async function loadTaskListsFromFile(manager) {
         }
       }
 
+      if (list.isArchived) manager.archivedTaskLists.push(list);
+      else manager.unarchivedTaskLists.push(list);
       manager.taskLists.push(list);
     }
 
@@ -432,7 +543,7 @@ export async function loadTaskListsFromFile(manager) {
       chalk.whiteBright("✅ Task Lists loaded successfully from ") +
         chalk.blueBright(path)
     );
-
+    await pause();
     await showTaskListMenu(manager);
   } catch (error) {
     console.error(chalk.red("❌ Failed to load Task Lists:"), error.message);

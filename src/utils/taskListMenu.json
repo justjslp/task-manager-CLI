@@ -2,8 +2,9 @@
   { "name": "🆕 Create New Task List", "value": 1 },
   { "name": "✏️ Update Task List", "value": 2 },
   { "name": "🗑️ Delete Task List", "value": 3 },
-  { "name": "📋 View Task Lists", "value": 4 },
-  { "name": "💾 Save the Manager to File", "value": 5 },
-  { "name": "📂 Load the Manager from File", "value": 6 },
+  { "name": "🗂️ Unarchive Archived Task List", "value": 4 },
+  { "name": "📖 View Task Lists", "value": 5 },
+  { "name": "💾 Save the Manager to File", "value": 6 },
+  { "name": "📂 Load the Manager from File", "value": 7 },
   { "name": "🏠 Return to Main Menu", "value": "menu" }
 ]

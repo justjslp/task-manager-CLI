@@ -8,14 +8,12 @@ export function getTimeZone() {
   return localTimeZone;
 }
 
-async function main() {
-
+export async function printBanner() {
   const title = "Task Manager CLI";
 
   const subtitle = chalk.bold.whiteBright(
     "\n✅ Welcome to Task Manager CLI. By"
   );
-
   // Print title and subtitle with gradient
   console.log("\n" + pastel.multiline(title));
   console.log(
@@ -25,7 +23,9 @@ async function main() {
       chalk.rgb(101, 101, 255).bold.underline("https://github.com/justjslp") +
       ".\n"
   );
+}
 
+async function main() {
   const manager = new TaskListManager();
   await mainMenu(manager);
 }

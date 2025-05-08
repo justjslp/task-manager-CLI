@@ -126,8 +126,8 @@ export class TaskList {
               : chalk.rgb(101, 101, 255).bold("Task List Not Default")
             : field === "isArchived"
             ? updatedField
-              ? chalk.rgb(101, 101, 255).bold("Task List Archived")
-              : chalk.rgb(101, 101, 255).bold("Task List Not Archived")
+              ? chalk.rgb(101, 101, 255).bold("Archived")
+              : chalk.rgb(101, 101, 255).bold("Not Archived")
             : chalk.rgb(101, 101, 255).bold(updatedField) + " successfully!")
       );
     } else {

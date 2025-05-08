@@ -5,6 +5,9 @@ import { parse } from "date-fns";
 import chalk from "chalk";
 import { selectedTaskMenu } from "../views/taskMenu.js";
 import { updateTaskOptions } from "../utils/JSONLoader.js";
+import { pause } from "../utils/pause.js";
+import { printBanner } from "../index.js";
+import { formatLocalDate } from "../utils/dateFormat.js";
 
 export async function addTask(manager, selectedTaskList) {
   console.log(chalk.rgb(168, 155, 157)("Add Task. Type 'cancel' to abort."));
@@ -23,6 +26,7 @@ export async function addTask(manager, selectedTaskList) {
 
   if (title.trim().toLowerCase() === "cancel") {
     console.log(chalk.rgb(207, 207, 234)("Operation cancelled."));
+    await pause();
     await selectedTaskMenu(manager, selectedTaskList);
   }
 
@@ -41,6 +45,7 @@ export async function addTask(manager, selectedTaskList) {
 
   if (description.trim().toLowerCase() === "cancel") {
     console.log(chalk.rgb(207, 207, 234)("Operation cancelled."));
+    await pause();
     await selectedTaskMenu(manager, selectedTaskList);
   }
 
@@ -65,6 +70,7 @@ export async function addTask(manager, selectedTaskList) {
 
   if (dueDate.trim().toLowerCase() === "cancel") {
     console.log(chalk.rgb(207, 207, 234)("Operation cancelled."));
+    await pause();
     await selectedTaskMenu(manager, selectedTaskList);
   }
 
@@ -86,6 +92,7 @@ export async function addTask(manager, selectedTaskList) {
 
   if (dueTime.trim().toLowerCase() === "cancel") {
     console.log(chalk.rgb(207, 207, 234)("Operation cancelled."));
+    await pause();
     await selectedTaskMenu(manager, selectedTaskList);
   }
 
@@ -100,6 +107,7 @@ export async function addTask(manager, selectedTaskList) {
 
   if (priority === "cancel") {
     console.log(chalk.rgb(207, 207, 234)("Operation cancelled."));
+    await pause();
     await selectedTaskMenu(manager, selectedTaskList);
   }
 
@@ -124,12 +132,14 @@ export async function addTask(manager, selectedTaskList) {
   });
 
   selectedTaskList.addTask(newTask);
+  await pause();
   await selectedTaskMenu(manager, selectedTaskList);
 }
 
 export async function updateTask(manager, selectedTaskList) {
   if (selectedTaskList.nonCompletedTasks.length === 0) {
     console.warn(chalk.redBright("⚠️ You haven't tasks available to update."));
+    await pause();
     await selectedTaskMenu(manager, selectedTaskList);
   }
 
@@ -149,7 +159,6 @@ export async function updateTask(manager, selectedTaskList) {
 
   await updateTaskField(manager, selectedTaskList, selectedTask);
 }
-
 async function updateTaskField(manager, selectedTaskList, selectedTask) {
   const { updateTaskAction } = await inquirer.prompt([
     {
@@ -249,28 +258,25 @@ async function updateTaskField(manager, selectedTaskList, selectedTask) {
       await updateTaskField(manager, selectedTaskList, selectedTask);
       break;
     case 5:
-      const { toggleCompleted } = await inquirer.prompt([
+      const { markAsCompleted } = await inquirer.prompt([
         {
-          type: "list",
-          name: "toggleCompleted",
-          message:
-            "🕹️ Would you like to toggle the completed status for this Task?",
-          choices: [
-            { name: "✔️ Mark as Completed", value: 1 },
-            { name: "✖️ Mark as Not Completed", value: 2 },
-          ],
+          type: "confirm",
+          name: "markAsCompleted",
+          message: "🕹️ Would you like to mark the Task as completed?",
         },
       ]);
-      if (toggleCompleted === 1) {
+
+      if (markAsCompleted) {
         selectedTask.updatedTaskFields("completed", true);
         selectedTaskList.completedTasks.push(selectedTask);
         selectedTaskList.nonCompletedTasks =
           selectedTaskList.nonCompletedTasks.filter(
             (task) => task !== selectedTask
           );
-      } else selectedTask.updatedTaskFields("completed", false);
-      selectedTask.completedAt = Date.now();
-      await selectedTaskMenu(manager, selectedTaskList);
+        selectedTask.completedAt = Date.now();
+        await pause();
+        await selectedTaskMenu(manager, selectedTaskList);
+      } else await selectedTaskMenu(manager, selectedTaskList);
       break;
     case "back":
       await updateTask(manager, selectedTaskList);
@@ -284,6 +290,7 @@ async function updateTaskField(manager, selectedTaskList, selectedTask) {
 export async function deleteTask(manager, selectedTaskList) {
   if (selectedTaskList.nonCompletedTasks.length === 0) {
     console.warn(chalk.redBright("⚠️ You haven't tasks available to delete."));
+    await pause();
     await selectedTaskMenu(manager, selectedTaskList);
   }
 
@@ -291,7 +298,7 @@ export async function deleteTask(manager, selectedTaskList) {
     {
       type: "list",
       name: "selectedTaskId",
-      message: "🗑️ Select a Task to delete.",
+      message: "🗑️ Select a Task to delete",
       choices: selectedTaskList.nonCompletedTasks.map((list) => ({
         name: list.title,
         value: list.id,
@@ -319,6 +326,7 @@ export async function reopenCompletedTask(manager, selectedTaskList) {
     console.warn(
       chalk.redBright("⚠️ You haven't completed tasks available to re open.")
     );
+    await pause();
     await selectedTaskMenu(manager, selectedTaskList);
   }
 
@@ -326,7 +334,7 @@ export async function reopenCompletedTask(manager, selectedTaskList) {
     {
       type: "list",
       name: "selectedTaskId",
-      message: "🔄 Select a Task to reopen.",
+      message: "🔄 Select a Task to reopen",
       choices: selectedTaskList.completedTasks.map((list) => ({
         name: list.title,
         value: list.id,
@@ -352,41 +360,219 @@ export async function displayTasks(manager, selectedTaskList) {
     selectedTaskList.completedTasks.length === 0
   ) {
     console.warn(chalk.redBright("⚠️ You haven't tasks available to display."));
+    await pause();
+    return selectedTaskMenu(manager, selectedTaskList);
+  }
+
+  const { displayFilter } = await inquirer.prompt({
+    type: "list",
+    name: "displayFilter",
+    message: "📝 Which tasks would you like to see?",
+    choices: [
+      { name: "✅ Completed Tasks", value: 1 },
+      { name: "⏳ Non Completed Tasks", value: 2 },
+      { name: "📋 All Tasks", value: 3 },
+      { name: "🔙 Go Back", value: "back" },
+    ],
+  });
+
+  switch (displayFilter) {
+    case 1:
+      if (selectedTaskList.completedTasks.length === 0) {
+        console.warn(
+          chalk.redBright(
+            "⚠️ You haven't completed tasks available to display."
+          )
+        );
+      } else {
+        selectedTaskList.getCompletedTasks();
+      }
+      break;
+
+    case 2:
+      if (selectedTaskList.nonCompletedTasks.length === 0) {
+        console.warn(
+          chalk.redBright(
+            "⚠️ You haven't non-completed tasks available to display."
+          )
+        );
+      } else {
+        selectedTaskList.getNonCompletedTasks();
+      }
+      break;
+
+    case 3:
+      selectedTaskList.getAllTasks();
+      break;
+
+    case "back":
+      await selectedTaskMenu(manager, selectedTaskList);
+      break;
+
+    default:
+      console.warn(chalk.redBright("❌ Invalid option."));
+      break;
+  }
+
+  await pause();
+  console.clear();
+  await printBanner();
+  await displayTasks(manager, selectedTaskList);
+}
+
+export async function filterTasks(manager, selectedTaskList) {
+
+  if (selectedTaskList.tasks.length === 0) {
+    console.warn(chalk.redBright("⚠️ You haven't tasks available to filter."));
+    await pause();
     await selectedTaskMenu(manager, selectedTaskList);
   }
 
-  const { displayFilter } = await inquirer.prompt([
-    {
-      type: "list",
-      name: "displayFilter",
-      message: "📝 Which tasks would you like to see?",
-      choices: [
-        { name: "✅ Completed Tasks", value: 1 },
-        { name: "⏳ Non Completed Tasks", value: 2 },
-        { name: "📋 All Tasks", value: 3 },
-      ],
-    },
-  ]);
-
-  if (displayFilter === 1) {
-    if (selectedTaskList.completedTasks.length === 0) {
-      console.warn(
-        chalk.redBright("⚠️ You haven't completed tasks available to display.")
-      );
-      await selectedTaskMenu(manager, selectedTaskList);
-    } else selectedTaskList.getCompletedTasks();
-  } else if (displayFilter === 2) {
-    if (selectedTaskList.nonCompletedTasks.length === 0) {
-      console.warn(
-        chalk.redBright("⚠️ You haven't completed tasks available to display.")
-      );
-      await selectedTaskMenu(manager, selectedTaskList);
-    } else selectedTaskList.getNonCompletedTasks();
-  } else selectedTaskList.getAllTasks();
-
-  await selectedTaskMenu(manager, selectedTaskList);
+  const { field } = await inquirer.prompt({
+    type: "list",
+    name: "field",
+    message: "🔍 Which field would you like to filter by?",
+    choices: [
+      { name: "📛 Title (Contains…)", value: "title" },
+      { name: "📝 Description (Contains…)", value: "description" },
+      { name: "📅 Due Date (Before/After)", value: "dueDate" },
+      { name: "🚦 Priority (Equals)", value: "priority" },
+      { name: "🗓️ Created At (Before/After)", value: "createdAt" },
+      { name: "🔙 Go Back", value: "back" },
+    ],
+  });
+  await filterByField(manager, selectedTaskList, field);
 }
 
-export async function filterTasks(manager, selectedTaskList) {}
+async function filterByField(manager, selectedTaskList, field) {
+  let filtered = [];
+  switch (field) {
+    case "title": {
+      const { query } = await inquirer.prompt([
+        {
+          type: "input",
+          name: "query",
+          message: "🔎 Enter substring to match in title:",
+        },
+      ]);
+      filtered = selectedTaskList.tasks.filter((task) =>
+        task.title.toLowerCase().includes(query.toLowerCase())
+      );
+      break;
+    }
+    case "description": {
+      const { query } = await inquirer.prompt([
+        {
+          type: "input",
+          name: "query",
+          message: "🔎 Enter substring to match in title:",
+        },
+      ]);
+      filtered = selectedTaskList.tasks.filter((task) =>
+        task.description.toLowerCase().includes(query.toLowerCase())
+      );
+      break;
+    }
+    case "dueDate": {
+      const { when, date } = await inquirer.prompt([
+        {
+          type: "list",
+          name: "when",
+          message: "Before or after?",
+          choices: ["Before", "After"],
+        },
+        { type: "input", name: "date", message: "📅 Enter date (YYYY-MM-DD):" },
+      ]);
+      const dt = parse(date, "yyyy-MM-dd", Date.now());
+      filtered = selectedTaskList.tasks.filter((task) =>
+        when === "before" ? task.dueDate < dt : task.dueDate > dt
+      );
+      break;
+    }
+    case "priority": {
+      const { p } = await inquirer.prompt({
+        type: "list",
+        name: "p",
+        message: "🔢 Select priority:",
+        choices: priorityLevels.map((pl) => ({
+          name: pl.name,
+          value: pl.value,
+        })),
+      });
+      filtered = selectedTaskList.tasks.filter((t) => t.priority === p);
+      break;
+    }
+    case "createdAt": {
+      const { when, date } = await inquirer.prompt([
+        {
+          type: "list",
+          name: "when",
+          message: "Before or after?",
+          choices: ["Before", "After"],
+        },
+        { type: "input", name: "date", message: "📅 Enter date (YYYY-MM-DD):" },
+      ]);
+      const dt = parse(date, "yyyy-MM-dd", Date.now());
+      filtered = selectedTaskList.tasks.filter((task) =>
+        when === "Before"
+          ? Number(task.dueDate) < dt
+          : Number(task.dueDate) > dt
+      );
+      break;
+    }
+    case "back":
+      await selectedTaskMenu(manager, selectedTaskList);
+      break;
+  }
 
-export async function sortTasks(manager, selectedTaskList) {}
+  if (filtered.length === 0) {
+    console.warn(chalk.redBright("⚠️ No tasks match that filter."));
+  } else {
+    filtered.forEach((task, index) => {
+      const foundPriority = priorityLevels.find(
+        (priority) => priority.value === task.priority
+      );
+      const now = Date.now();
+      const id = task.id;
+      const title = task.title;
+      const dueDate =
+        new Date(task.dueDate) < new Date(now).getTime()
+          ? chalk.redBright(`📅 ${formatLocalDate(task.dueDate)}`)
+          : chalk.blackBright(`📅 ${formatLocalDate(task.dueDate)}`);
+      const priority = chalk.yellow(foundPriority.name);
+      const completedAt = task.completedAt
+        ? chalk.green(`📅 ${formatLocalDate(task.completedAt)}`)
+        : chalk.redBright("Not completed so far.");
+      const createdAt = task.createdAt
+        ? chalk.blackBright(`📅 ${formatLocalDate(task.createdAt)}`)
+        : "";
+      const updatedAt = task.updatedAt
+        ? chalk.blackBright(`📝 ${formatLocalDate(task.updatedAt)}`)
+        : chalk.blackBright("Not updated so far.");
+
+      console.log(
+        chalk.cyan(index + 1 + ". ") +
+          chalk.bold.green(`${title} `) +
+          chalk.gray(`(ID: ${id.slice(0, 8)}...) `) +
+          chalk.whiteBright(`Due date: ${dueDate} `) +
+          chalk.whiteBright(`Priority: ${priority}. `) +
+          chalk.whiteBright(`Completed at: ${completedAt} `) +
+          chalk.whiteBright(`Created at: ${createdAt} `) +
+          chalk.whiteBright(`Updated at: ${updatedAt} `)
+      );
+    });
+  }
+
+  await pause();
+  console.clear();
+  await printBanner();
+  await filterTasks(manager, selectedTaskList);
+}
+
+export async function sortTasks(manager, selectedTaskList) {
+  if (selectedTaskList.tasks.length === 0) {
+    console.warn(chalk.redBright("⚠️ You haven't tasks available to sort."));
+    await pause();
+    await selectedTaskMenu(manager, selectedTaskList);
+  }
+}
